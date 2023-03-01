@@ -9,7 +9,7 @@
 
 <h3 align="left">Portfolio:</h3>
 <p align="left">
-<a href="https://github.com/bhcosta90-especializati" target="blank">Project with course of EspecicializaTi</a>
+<a href="[https://github.com/bhcosta90-especializati](https://github.com/orgs/bhcosta90-especializati/repositories)" target="_blank">Project with course of EspecicializaTi</a>
 
 <h3 align="left">Connect with me:</h3>
 <p align="left">
