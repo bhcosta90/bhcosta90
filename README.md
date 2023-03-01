@@ -7,6 +7,10 @@
 
 - 📫 How to reach me **bhcosta90@gmail.com**
 
+<h3 align="left">Portfolio:</h3>
+<p align="left">
+<a href="https://github.com/bhcosta90-especializati" target="blank">Project with course of EspecicializaTi</a>
+
 <h3 align="left">Connect with me:</h3>
 <p align="left">
 <a href="https://twitter.com/bhcosta90" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/twitter.svg" alt="bhcosta90" height="30" width="40" /></a>
