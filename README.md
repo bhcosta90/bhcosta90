@@ -10,6 +10,10 @@
 <h3 align="left">Portfolio:</h3>
 <p align="left">
 <a href="https://github.com/orgs/bhcosta90-especializati/repositories" target="_blank">Project with course of EspecicializaTi</a>
+</p>
+<p align="left">
+<a href="https://github.com/orgs/bhcosta90-codepix/repositories" target="_blank">Project with course of CodePix</a>
+</p>
 
 <h3 align="left">Connect with me:</h3>
 <p align="left">
