@@ -9,7 +9,7 @@
 
 <h3 align="left">Some courses I did:</h3>
 <p align="left">
-[https://github.com/orgs/bhcosta90-cursos/repositories?type=source](Click Here)
+[https://github.com/orgs/bhcosta90-cursos/repositories?type=source] Click Here
 </p>
 
 <h3 align="left">Connect with me:</h3>
