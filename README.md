@@ -7,9 +7,9 @@
 
 - 📫 How to reach me **bhcosta90@gmail.com**
 
-<h3 align="left">Portfolio:</h3>
+<h3 align="left">Some courses I did:</h3>
 <p align="left">
-<a href="https://github.com/orgs/bhcosta90-especializati/repositories" target="_blank">Project with course of EspecicializaTi</a>
+<a href="[https://github.com/orgs/bhcosta90-especializati/repositories](https://github.com/orgs/bhcosta90-cursos/repositories?type=source)" target="_blank">Project with course of EspecicializaTi</a>
 </p>
 
 <h3 align="left">Connect with me:</h3>
