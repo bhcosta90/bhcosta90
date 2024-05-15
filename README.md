@@ -1,7 +1,7 @@
 <h1 align="center">Hi 👋, I'm Bruno Henrique da Costa</h1>
 <h3 align="center">A passionate backend developer from Brazil</h3>
 
-- 👨‍💻 All of my projects are available at [https://github.com/bhcosta90?tab=repositories&q=portfolio-&type=source&language=&sort=](https://github.com/bhcosta90?tab=repositories&q=portfolio-&type=source&language=&sort=)
+- 👨‍💻 All of my projects are available at https://github.com/orgs/bhcosta90-projects/repositories
 
 - 💬 Ask me about **php**
 
@@ -9,7 +9,7 @@
 
 <h3 align="left">Some courses I did:</h3>
 <p align="left">
-[https://github.com/orgs/bhcosta90-cursos/repositories?type=source] Click Here
+https://github.com/orgs/bhcosta90-cursos/repositories
 </p>
 
 <h3 align="left">Connect with me:</h3>
