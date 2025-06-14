@@ -1,0 +1,25 @@
+service: ssm-social-media
+
+plugins:
+  - serverless-plugin-for-each
+
+provider:
+  name: aws
+  region: ${env:AWS_DEFAULT_REGION}
+
+resources:
+  Resources:
+    $forEach:
+      iterator: ${self:custom.parameters}
+      template:
+        BasicParameter$forEach.key:
+          Type: AWS::SSM::Parameter
+          Properties:
+            Name: /bhcosta90/social-media/${sls:stage}/$forEach.value
+            Type: String
+            Value: change
+            Description: Parameter for $forEach.value
+            AllowedPattern: ".*"
+
+custom:
+  parameters: ${file(../env.yml)}
