@@ -19,28 +19,32 @@ final class DatabaseSeeder extends Seeder
                 ->withTenant()
                 ->create();
 
-            User::factory()->withTenant('john-doe')->create([
-                'name'  => 'John Doe',
-                'login' => 'john-doe',
-                'email' => 'john-doe@gmail.com',
-            ]);
+            if (!User::whereLogin($login = 'john-doe')->exists()) {
+                User::factory()->withTenant($login)->create([
+                    'name'  => 'John Doe',
+                    'login' => $login,
+                    'email' => 'john-doe@gmail.com',
+                ]);
 
-            Network::factory()->create([
-                'tenant_id' => 'john-doe',
-                'name'      => 'facebook',
-            ]);
+                Network::factory()->create([
+                    'tenant_id' => $login,
+                    'name'      => 'facebook',
+                ]);
+            }
 
-            User::factory()->withTenant('mayarathc99')->create([
-                'name'  => 'Mayara Thaine de Carvalho da Costa',
-                'login' => 'mayarathc99',
-                'email' => 'mayarathc99@gmail.com',
-            ]);
+            if (!User::whereLogin($login = 'mayarathc99')->exists()) {
+                User::factory()->withTenant($login)->create([
+                    'name'  => 'Mayara Thaine de Carvalho da Costa',
+                    'login' => $login,
+                    'email' => 'mayarathc99@gmail.com',
+                ]);
 
-            Network::factory()->create([
-                'tenant_id' => 'mayarathc99',
-                'name'      => 'linkedin',
-                'endpoint'  => 'https://www.linkedin.com/in/mayara-thaine-de-carvalho-1b8064a4/',
-            ]);
+                Network::factory()->create([
+                    'tenant_id' => $login,
+                    'name'      => 'linkedin',
+                    'endpoint'  => 'https://www.linkedin.com/in/mayara-thaine-de-carvalho-1b8064a4/',
+                ]);
+            }
         });
     }
 }
