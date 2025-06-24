@@ -16,7 +16,7 @@ final class NetworkController
         $network = Cache::remember(Network::CACHE_KEY . '_redirect_' . $name, now()->addDay(), fn () => Network::query()
             ->select(['id', 'endpoint'])
             ->whereName($name)
-            ->firstOrFail());
+            ->sole());
 
         RegisterNetworkHistoryAction::run(new RegisterNetworkHistoryInput(
             networkId: $network->id,
