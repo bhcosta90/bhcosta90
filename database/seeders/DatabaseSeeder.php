@@ -15,9 +15,7 @@ final class DatabaseSeeder extends Seeder
     public function run(): void
     {
         DB::transaction(function (): void {
-            User::factory(24)
-                ->withTenant()
-                ->create();
+            $total = 25;
 
             if (!User::whereLogin($login = 'john-doe')->exists()) {
                 User::factory()->withTenant($login)->create([
@@ -30,6 +28,7 @@ final class DatabaseSeeder extends Seeder
                     'tenant_id' => $login,
                     'name'      => 'facebook',
                 ]);
+                --$total;
             }
 
             if (!User::whereLogin($login = 'mayarathc99')->exists()) {
@@ -44,7 +43,12 @@ final class DatabaseSeeder extends Seeder
                     'name'      => 'linkedin',
                     'endpoint'  => 'https://www.linkedin.com/in/mayara-thaine-de-carvalho-1b8064a4/',
                 ]);
+                --$total;
             }
+
+            User::factory($total)
+                ->withTenant()
+                ->create();
         });
     }
 }
