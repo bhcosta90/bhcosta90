@@ -21,9 +21,12 @@ final class RegisterNetworkHistoryAction implements ShouldQueue
             $network = Network::findOrFail($input->networkId);
             $network->increment('clicks');
 
-            return $network->histories()->create([
+            /** @var NetworkHistory $history */
+            $history = $network->histories()->create([
                 'ip_address' => $input->ipAddress,
             ]);
+
+            return $history;
         });
     }
 }
