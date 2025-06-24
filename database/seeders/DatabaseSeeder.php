@@ -19,26 +19,27 @@ final class DatabaseSeeder extends Seeder
                 ->withTenant()
                 ->create();
 
-            User::factory()->withTenant('test-user')->create([
-                'name'  => 'Bruno Costa',
-                'login' => 'bhcosta90',
-                'email' => 'bhcosta90@gmail.com',
+            User::factory()->withTenant('john-doe')->create([
+                'name'  => 'John Doe',
+                'login' => 'john-doe',
+                'email' => 'john-doe@gmail.com',
             ]);
 
             Network::factory()->create([
-                'tenant_id' => 'test-user',
-                'name'      => 'testing',
+                'tenant_id' => 'john-doe',
+                'name'      => 'facebook',
             ]);
 
-            User::factory()->withTenant('test-user-2')->create([
-                'name'  => 'Test User 2',
-                'login' => 'test-user-2',
-                'email' => 'test2@example.com',
+            User::factory()->withTenant('mayarathc99')->create([
+                'name'  => 'Mayara Thaine de Carvalho da Costa',
+                'login' => 'mayarathc99',
+                'email' => 'mayarathc99@gmail.com',
             ]);
 
             Network::factory()->create([
-                'tenant_id' => 'test-user-2',
-                'name'      => 'testing',
+                'tenant_id' => 'mayarathc99',
+                'name'      => 'linkedin',
+                'endpoint'  => 'https://www.linkedin.com/in/mayara-thaine-de-carvalho-1b8064a4/',
             ]);
         });
     }
