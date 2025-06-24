@@ -10,6 +10,9 @@ foreach (config('tenancy.central_domains') as $domain) {
     Route::domain($domain)->group(function (): void {
         Route::redirect('/linkedin', 'https://linkedin.com/in/bhcosta90');
         Route::redirect('/github', 'https://github.com.br/bhcosta90');
+        Route::redirect('/facebook', 'https://www.facebook.com/bhcosta1990');
+        Route::redirect('/fb', 'https://www.facebook.com/bhcosta1990');
+        Route::redirect('/instagram', 'https://www.instagram.com/bhcosta90/');
     });
 }
 
