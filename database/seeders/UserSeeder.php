@@ -6,7 +6,6 @@ namespace Database\Seeders;
 
 use App\Models\Network;
 use App\Models\User;
-use DB;
 use Illuminate\Database\Seeder;
 
 final class UserSeeder extends Seeder
@@ -17,9 +16,10 @@ final class UserSeeder extends Seeder
 
         if (!User::whereLogin($login = 'john-doe')->exists()) {
             User::factory()->withTenant($login)->create([
-                'name'  => 'John Doe',
-                'login' => $login,
-                'email' => 'john-doe@gmail.com',
+                'name'     => 'John Doe',
+                'login'    => $login,
+                'email'    => 'john-doe@gmail.com',
+                'password' => '$2y$12$QOJnNbDumloUbmjEzneYWORgODfV76i.BvgSlsn1cFWoCS0O9SJ3u',
             ]);
 
             Network::factory()->create([
@@ -31,9 +31,10 @@ final class UserSeeder extends Seeder
 
         if (!User::whereLogin($login = 'mayarathc99')->exists()) {
             User::factory()->withTenant($login)->create([
-                'name'  => 'Mayara Thaine de Carvalho da Costa',
-                'login' => $login,
-                'email' => 'mayarathc99@gmail.com',
+                'name'     => 'Mayara Thaine de Carvalho da Costa',
+                'login'    => $login,
+                'email'    => 'mayarathc99@gmail.com',
+                'password' => '$2y$12$3C6Yw6TACFLwqS.Noed4TuT48HGk0tEK0O4MW0Nnwy6SpT4km1p6K',
             ]);
 
             Network::factory()->create([
