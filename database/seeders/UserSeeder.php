@@ -13,41 +13,39 @@ final class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::transaction(function (): void {
-            $total = 25;
+        $total = 25;
 
-            if (!User::whereLogin($login = 'john-doe')->exists()) {
-                User::factory()->withTenant($login)->create([
-                    'name'  => 'John Doe',
-                    'login' => $login,
-                    'email' => 'john-doe@gmail.com',
-                ]);
+        if (!User::whereLogin($login = 'john-doe')->exists()) {
+            User::factory()->withTenant($login)->create([
+                'name'  => 'John Doe',
+                'login' => $login,
+                'email' => 'john-doe@gmail.com',
+            ]);
 
-                Network::factory()->create([
-                    'tenant_id' => $login,
-                    'name'      => 'facebook',
-                ]);
-                --$total;
-            }
+            Network::factory()->create([
+                'tenant_id' => $login,
+                'name'      => 'facebook',
+            ]);
+            --$total;
+        }
 
-            if (!User::whereLogin($login = 'mayarathc99')->exists()) {
-                User::factory()->withTenant($login)->create([
-                    'name'  => 'Mayara Thaine de Carvalho da Costa',
-                    'login' => $login,
-                    'email' => 'mayarathc99@gmail.com',
-                ]);
+        if (!User::whereLogin($login = 'mayarathc99')->exists()) {
+            User::factory()->withTenant($login)->create([
+                'name'  => 'Mayara Thaine de Carvalho da Costa',
+                'login' => $login,
+                'email' => 'mayarathc99@gmail.com',
+            ]);
 
-                Network::factory()->create([
-                    'tenant_id' => $login,
-                    'name'      => 'linkedin',
-                    'endpoint'  => 'https://www.linkedin.com/in/mayara-thaine-de-carvalho-1b8064a4/',
-                ]);
-                --$total;
-            }
+            Network::factory()->create([
+                'tenant_id' => $login,
+                'name'      => 'linkedin',
+                'endpoint'  => 'https://www.linkedin.com/in/mayara-thaine-de-carvalho-1b8064a4/',
+            ]);
+            --$total;
+        }
 
-            User::factory($total)
-                ->withTenant()
-                ->create();
-        });
+        User::factory($total)
+            ->withTenant()
+            ->create();
     }
 }
