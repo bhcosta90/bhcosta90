@@ -7,8 +7,10 @@
 
 @story('deploy', ['on' => 'web'])
     update-code
-    install-dependencies
+    php-install-dependencies
+    node-install-dependencies
     php-artisan-config-cache
+    php artisan migrate --force
 @endstory
 
 @task('update-code')
@@ -16,10 +18,14 @@
     git pull origin main
 @endtask
 
-@task('install-dependencies')
+@task('php-install-dependencies')
     cd /var/www/bhcosta90.dev.br/
     rm -f bootstrap/cache/{config.php,events.php,packages.php,routes-v7.php,services.php}
     composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
+@endtask
+
+@task('node-install-dependencies')
+    cd /var/www/bhcosta90.dev.br/
     npm install
     npm run build
 @endtask
