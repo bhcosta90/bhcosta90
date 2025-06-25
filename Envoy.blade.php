@@ -1,4 +1,4 @@
-@servers(['web' => ['root@143.110.156.127']])
+@servers(['web' => ['network@143.110.156.127']])
 
 @story('deploy', ['on' => 'web'])
     update-code
