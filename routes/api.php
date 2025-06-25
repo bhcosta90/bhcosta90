@@ -15,6 +15,7 @@ foreach (config('tenancy.central_domains') as $domain) {
         Route::redirect('/facebook', 'https://www.facebook.com/bhcosta1990');
         Route::redirect('/fb', 'https://www.facebook.com/bhcosta1990');
         Route::redirect('/instagram', 'https://www.instagram.com/bhcosta90/');
+        Route::redirect('/google', 'https://www.google.com.br/');
     });
 }
 
