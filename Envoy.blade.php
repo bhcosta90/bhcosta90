@@ -23,8 +23,5 @@
 
 @task('php-artisan-config-cache')
     cd /var/www/bhcosta90.dev.br/
-    php artisan config:cache
-    php artisan route:cache
-    php artisan event:cache
-    php artisan view:cache
+    php artisan optimize
 @endtask
