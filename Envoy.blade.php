@@ -1,6 +1,6 @@
 @servers(['web' => ['root@143.110.156.127']])
 
-@story('deploy')
+@story('deploy', ['on' => 'web'])
     update-code
     install-dependencies
     php-artisan-config-cache
