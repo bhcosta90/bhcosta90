@@ -18,7 +18,7 @@
 
 @task('install-dependencies')
     cd /var/www/bhcosta90.dev.br/
-    rm bootstrap/cache/{config.php,events.php,packages.php,routes-v7.php,services.php}
+    rm -f bootstrap/cache/{config.php,events.php,packages.php,routes-v7.php,services.php}
     composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
     npm install
     npm run build
