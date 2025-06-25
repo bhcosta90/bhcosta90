@@ -1,4 +1,9 @@
-@servers(['web' => ['network@143.110.156.127']])
+@php
+    Dotenv\Dotenv::createImmutable(__DIR__)->load();
+    $webServer = explode(',', $_ENV['DEPLOY_SERVERS_WEB']);
+@endphp
+
+@servers(['web' => $webServer])
 
 @story('deploy', ['on' => 'web'])
     update-code
