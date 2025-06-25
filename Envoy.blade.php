@@ -25,7 +25,8 @@
 @endtask
 
 @task('node-install-dependencies')
-    cd /var/www/bhcosta90.dev.br/
+    cd /var/www/bhcosta90.dev.br
+    nvm use 22
     npm install
     npm run build
 @endtask
