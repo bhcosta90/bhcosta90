@@ -45,9 +45,6 @@ jobs:
           extensions: mbstring, bcmath, openssl, pdo, tokenizer, xml, ctype, json, curl
           tools: composer, envoy
 
-      - name: Instalar dependências PHP (Composer)
-        run: composer install --no-dev --optimize-autoloader
-
       - name: Criar .env temporário para o Envoy
         run: |
           echo "DEPLOY_SERVERS_WEB=${{ secrets.DEPLOY_SERVERS_WEB }}" > .env
@@ -65,5 +62,5 @@ jobs:
           ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
 
       - name: Executar Laravel Envoy
-        run: envoy run deploy
+        run: vendor/bin/envoy run deploy
 
