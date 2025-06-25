@@ -10,7 +10,7 @@
     php-install-dependencies
     node-install-dependencies
     php-artisan-config-cache
-    php artisan migrate --force
+    php-artisan-migrate
 @endstory
 
 @task('update-code')
@@ -33,6 +33,11 @@
     nvm use 22
     npm install
     npm run build
+@endtask
+
+@task('php-artisan-migrate')
+    cd /var/www/bhcosta90.dev.br/
+    php artisan migrate --force
 @endtask
 
 @task('php-artisan-config-cache')
