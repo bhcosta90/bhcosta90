@@ -56,7 +56,10 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          tools: envoy
+          tools: composer, envoy
+
+      - name: Install Composer Dependencies (only for Envoy)
+        run: composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
 
       - name: Create temporary .env for Envoy
         run: echo "DEPLOY_SERVERS_WEB=${{ secrets.DEPLOY_SERVERS_WEB }}" > .env
