@@ -26,6 +26,10 @@
 
 @task('node-install-dependencies')
     cd /var/www/bhcosta90.dev.br
+
+    export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
     nvm use 22
     npm install
     npm run build
