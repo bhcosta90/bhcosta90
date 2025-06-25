@@ -32,6 +32,7 @@
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.1",
         "laravel/breeze": "^2.3",
+        "laravel/envoy": "^2.10",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.21",
         "laravel/sail": "^1.41",
