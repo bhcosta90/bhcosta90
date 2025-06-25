@@ -55,12 +55,11 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          # Extrai o host do DEPLOY_SERVER (remove user@)
-          DEPLOY_HOST=$(echo "${{ secrets.DEPLOY_SERVERS_WEB }}" | cut -d'@' -f2)
-
-          # Adiciona fingerprint ao known_hosts
+          IFS=',' read -ra HOSTS <<< "${{ secrets.DEPLOY_SERVERS_WEB }}"
+          for ITEM in "${HOSTS[@]}"; do
+          DEPLOY_HOST=$(echo "$ITEM" | cut -d'@' -f2)
           ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
-
+          done
       - name: Executar Laravel Envoy
         run: vendor/bin/envoy run deploy
 
