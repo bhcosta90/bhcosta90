@@ -15,9 +15,11 @@ final class TenantFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'       => $this->faker->name(),
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
+            'name'            => $this->faker->name(),
+            'total_redirects' => fake()->numberBetween(7, 14),
+            'date_expired'    => fake()->dateTimeBetween('7 days', '14 days')->format('Y-m-d'),
+            'created_at'      => Carbon::now(),
+            'updated_at'      => Carbon::now(),
         ];
     }
 }

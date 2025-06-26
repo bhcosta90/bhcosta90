@@ -13,6 +13,8 @@ return new class() extends Migration {
             $table->string('id')->primary();
             $table->string('name');
             $table->json('data')->nullable();
+            $table->string('total_redirects');
+            $table->string('date_expired');
             $table->timestamps();
             $table->softDeletes();
         });
