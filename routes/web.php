@@ -10,6 +10,12 @@ foreach (config('tenancy.central_domains') as $domain) {
     Route::domain($domain)->group(function (): void {
         Route::get('/', fn (): string => '');
         Route::view('/dashboard', 'dashboard');
+
+        Route::get('/me', function () {
+            return auth()->check()
+                ? 'Logado como ' . auth()->user()->email
+                : 'Não está logado';
+        });
     });
 }
 
