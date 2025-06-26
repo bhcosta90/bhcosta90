@@ -18,11 +18,40 @@
 @endstory
 
 @story('reset', ['on' => 'web'])
+    pause-horizon
     update-code
     reset-database
     php-install-dependencies
     php-artisan-config-cache
+    start-horizon
 @endstory
+
+@task('pause-horizon')
+    cd {{ $app_dir }}
+    echo "🔄 Iniciando deploy..."
+
+    echo "⏸️ Pausando Horizon..."
+    php artisan horizon:pause
+
+    echo "⏳ Aguardando jobs em execução..."
+    while php artisan horizon:status | grep -q running; do
+    echo "⏳ Ainda processando jobs... aguardando 5s"
+    sleep 5
+    done
+
+    git pull origin main
+@endtask
+
+@task('start-horizon')
+    cd {{ $app_dir }}
+    echo "♻️ Reiniciando Horizon..."
+    php artisan horizon:terminate
+
+    echo "▶️ Voltando Horizon ao normal..."
+    php artisan horizon:continue
+
+    echo "✅ Deploy finalizado com sucesso!"
+@endtask
 
 @task('update-code')
     cd {{ $app_dir }}
