@@ -90,3 +90,8 @@
     php artisan event:cache
     php artisan view:cache
 @endtask
+
+@task('remove-log')
+    cd {{ $app_dir }}
+    rm -f storage/logs/*.log
+@endtask
