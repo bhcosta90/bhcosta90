@@ -13,9 +13,9 @@
 @story('deploy', ['on' => 'web'])
     pause-horizon
     update-code
+    node-install-dependencies
     php-install-dependencies
     php-artisan-config-cache
-    node-install-dependencies
     php-artisan-migrate
     start-horizon
 @endstory
