@@ -21,10 +21,12 @@
 @endstory
 
 @story('reset', ['on' => 'web'])
+    pause-horizon
     update-code
     reset-database
     php-install-dependencies
     php-artisan-config-cache
+    start-horizon
 @endstory
 
 @task('pause-horizon')
@@ -36,7 +38,7 @@
 
     echo "⏳ Aguardando jobs em execução..."
     while php artisan horizon:status | grep -q running; do
-    echo "⏳ Ainda processando jobs... aguardando 5s"
+        echo "⏳ Ainda processando jobs... aguardando 5s"
     sleep 5
     done
 
