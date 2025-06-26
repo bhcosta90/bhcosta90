@@ -45,6 +45,16 @@ final class UserSeeder extends Seeder
             --$total;
         }
 
+        if (!User::whereLogin($login = 'bhcosta90')->exists()) {
+            User::factory()->withTenant($login)->create([
+                'name'     => 'Bruno henrique da Costa',
+                'login'    => $login,
+                'email'    => 'bhcosta90@gmail.com',
+                'password' => '$2y$12$r0YSaNw4DCc562LhvOIcYegmyP6QoNKK6ypg9LrPaBY89pqWbAgTW',
+            ]);
+            --$total;
+        }
+
         User::factory($total)
             ->withTenant()
             ->create();
