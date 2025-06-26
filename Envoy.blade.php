@@ -55,6 +55,8 @@
 
 @task('update-code')
     cd {{ $app_dir }}
+    git checkout main -f
+    chmod 777 -R bootstrap/cache
     git pull origin main
 @endtask
 
