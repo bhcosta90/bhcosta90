@@ -1,5 +1,6 @@
 @setup
     $app_dir = '/var/www/bhcosta90.dev.br/';
+    $branch = 'main';
 @endsetup
 
 @php
@@ -10,20 +11,20 @@
 @servers(['web' => $webServer])
 
 @story('deploy', ['on' => 'web'])
+    pause-horizon
     update-code
-    php-install-dependencies
     node-install-dependencies
+    php-install-dependencies
     php-artisan-config-cache
     php-artisan-migrate
+    start-horizon
 @endstory
 
 @story('reset', ['on' => 'web'])
-    pause-horizon
     update-code
     reset-database
     php-install-dependencies
     php-artisan-config-cache
-    start-horizon
 @endstory
 
 @task('pause-horizon')
@@ -39,7 +40,7 @@
     sleep 5
     done
 
-    git pull origin main
+    git pull origin {{ $branch }}
 @endtask
 
 @task('start-horizon')
@@ -55,13 +56,14 @@
 
 @task('update-code')
     cd {{ $app_dir }}
-    git pull origin main
+    git checkout {{ $branch }} -f
+    git pull origin {{ $branch }}
 @endtask
 
 @task('php-install-dependencies')
     cd {{ $app_dir }}
-    rm -f bootstrap/cache/{config.php,events.php,packages.php,routes-v7.php,services.php}
     composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
+    rm -f bootstrap/cache/{config.php,events.php,packages.php,routes-v7.php,services.php}
 @endtask
 
 @task('node-install-dependencies')
