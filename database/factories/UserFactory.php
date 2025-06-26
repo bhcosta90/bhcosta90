@@ -32,12 +32,12 @@ final class UserFactory extends Factory
         ]);
     }
 
-    public function withTenant(?string $domain = null): static
+    public function withTenant(?string $domain = null, ?int $totalDays = null, ?string $date = null): static
     {
-        return $this->afterCreating(function () use ($domain): void {
-            Tenant::factory()->create([
-                'id' => $domain ?? fake()->unique()->domainName(),
-            ]);
-        });
+        return $this->afterCreating(fn () => Tenant::factory()->create(array_filter([
+            'id'              => $domain ?? fake()->unique()->domainName(),
+            'total_redirects' => $totalDays,
+            'date_expired'    => $date,
+        ], fn ($value) => !is_null($value))));
     }
 }

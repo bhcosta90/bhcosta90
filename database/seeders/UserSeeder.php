@@ -15,7 +15,7 @@ final class UserSeeder extends Seeder
         $total = 25;
 
         if (!User::whereLogin($login = 'john-doe')->exists()) {
-            User::factory()->withTenant($login)->create([
+            User::factory()->withTenant($login, 9999999, '2999-12-13')->create([
                 'name'     => 'John Doe',
                 'login'    => $login,
                 'email'    => 'john-doe@gmail.com',
@@ -30,7 +30,7 @@ final class UserSeeder extends Seeder
         }
 
         if (!User::whereLogin($login = 'mayarathc99')->exists()) {
-            User::factory()->withTenant($login)->create([
+            User::factory()->withTenant($login, 9999999, '2999-12-13')->create([
                 'name'     => 'Mayara Thaine de Carvalho da Costa',
                 'login'    => $login,
                 'email'    => 'mayarathc99@gmail.com',
@@ -46,7 +46,7 @@ final class UserSeeder extends Seeder
         }
 
         if (!User::whereLogin($login = 'bhcosta90')->exists()) {
-            User::factory()->withTenant($login)->create([
+            User::factory()->withTenant($login, 9999999, '2999-12-13')->create([
                 'name'     => 'Bruno henrique da Costa',
                 'login'    => $login,
                 'email'    => 'bhcosta90@gmail.com',

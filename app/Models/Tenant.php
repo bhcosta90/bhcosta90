@@ -28,6 +28,8 @@ final class Tenant extends BaseTenant implements TenantWithDatabase
         return [
             'id',
             'name',
+            'total_redirects',
+            'date_expired',
         ];
     }
 }
