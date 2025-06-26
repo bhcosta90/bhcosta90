@@ -36,7 +36,7 @@ final class UserFactory extends Factory
         ?string $domain = null,
         ?int $totalDays = null,
         ?string $date = null
-    ): static {
+    ): self {
         return $this->afterCreating(fn () => Tenant::factory()->create(array_filter([
             'id'              => $domain ?? fake()->unique()->domainName(),
             'total_redirects' => $totalDays,
