@@ -20,6 +20,10 @@ final class Network extends Model
 
     public const CACHE_KEY = '20250523162700';
 
+    protected $casts = [
+        'clicks' => 'integer',
+    ];
+
     public function histories(): HasMany
     {
         return $this->hasMany(NetworkHistory::class);
