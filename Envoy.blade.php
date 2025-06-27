@@ -64,13 +64,21 @@
 
 @task('php-install-dependencies')
     cd {{ $app_dir }}
-    composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
+    if [ $(find composer.json -mmin -1 | wc -l) -eq 0 ]; then
+        composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
+    else
+        echo "composer.json it was modified less than 1 minute. We are jumping this installation process."
+    fi
     rm -f bootstrap/cache/{config.php,events.php,packages.php,routes-v7.php,services.php}
 @endtask
 
 @task('node-install-dependencies')
     cd /var/www/bhcosta90.dev.br
-    npm install
+    if [ $(find package.json -mmin -1 | wc -l) -eq 0 ]; then
+        npm install
+    else
+        echo "package.json it was modified less than 1 minute. We are jumping this installation process."
+    fi
     npm run build
 @endtask
 
