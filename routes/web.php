@@ -3,7 +3,6 @@
 declare(strict_types = 1);
 
 use App\Livewire\User\Profile;
-use App\Livewire\Users\Index;
 use Illuminate\Support\Facades\Route;
 
 foreach (config('tenancy.central_domains') as $domain) {
@@ -14,7 +13,6 @@ foreach (config('tenancy.central_domains') as $domain) {
 }
 
 Route::middleware(['auth'])->group(function (): void {
-    Route::get('/users', Index::class)->name('users.index');
     Route::get('/user/profile', Profile::class)->name('user.profile');
 });
 
