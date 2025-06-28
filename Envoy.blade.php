@@ -64,17 +64,23 @@
 
 @task('php-install-dependencies')
     cd {{ $app_dir }}
-    if [ $(find composer.lock -mmin -1 | wc -l) -eq 1 ]; then
+
+    UPDATED_LOCK=$(git diff --name-only HEAD@{1} HEAD | grep composer.lock || true)
+
+    if [ -n "UPDATED_LOCK" ]; then
         composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
     else
         echo "composer.lock it was modified less than 1 minute. We are jumping this installation process."
     fi
+
     rm -f bootstrap/cache/{config.php,events.php,packages.php,routes-v7.php,services.php}
 @endtask
 
 @task('node-install-dependencies')
     cd {{ $app_dir }}
-    if [ $(find package-lock.json -mmin -1 | wc -l) -eq 1 ]; then
+
+    UPDATED_LOCK=$(git diff --name-only HEAD@{1} HEAD | grep package-lock.json || true)
+    if [ -n "UPDATED_LOCK" ]; then
         npm install
     else
         echo "package-lock.json it was modified less than 1 minute. We are jumping this installation process."
