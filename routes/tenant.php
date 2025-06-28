@@ -26,14 +26,14 @@ Route::group([
         InitializeTenancyByPath::class,
     ],
 ], function (): void {
-    Route::middleware('web')->group(function () {
+    Route::middleware('web')->group(function (): void {
         Route::view('/dashboard', 'dashboard')->name('dashboard');
         Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
         Route::post('login', [AuthenticatedSessionController::class, 'store']);
         Route::get('/user/profile', Profile::class)->name('user.profile');
     });
 
-    Route::middleware('api')->group(function () {
+    Route::middleware('api')->group(function (): void {
         Route::get('{network}', [NetworkController::class, 'redirect']);
     });
 });

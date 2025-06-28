@@ -38,7 +38,7 @@ final class UserFactory extends Factory
         ?int $totalDays = null,
         ?string $date = null
     ): self {
-        return $this->afterCreating(function (User $user) use ($domain, $totalDays, $date) {
+        return $this->afterCreating(function (User $user) use ($domain, $totalDays, $date): void {
             $tenant = Tenant::factory()->create(array_filter([
                 'id'              => $domain ?? fake()->unique()->domainName(),
                 'total_redirects' => $totalDays,
