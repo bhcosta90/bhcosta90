@@ -66,7 +66,6 @@
     cd {{ $app_dir }}
 
     UPDATED_LOCK=$(git diff --name-only HEAD@{1} HEAD | grep composer.lock || true)
-
     if [ -n "UPDATED_LOCK" ]; then
         composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
     else
