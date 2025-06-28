@@ -73,7 +73,7 @@
 @endtask
 
 @task('node-install-dependencies')
-    cd /var/www/bhcosta90.dev.br
+    cd {{ $app_dir }}
     if [ $(find package-lock.json -mmin -1 | wc -l) -eq 1 ]; then
         npm install
     else
