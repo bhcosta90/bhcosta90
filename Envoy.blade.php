@@ -69,7 +69,7 @@
     if [ -n "$UPDATED_LOCK" ]; then
         composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
     else
-        echo "▶️ composer.lock it was not updated, the installation process of will be jumped."
+        echo "▶️ composer.lock was not updated; skipping installation process."
     fi
 
     rm -f bootstrap/cache/{config.php,events.php,packages.php,routes-v7.php,services.php}
@@ -82,7 +82,7 @@
     if [ -n "$UPDATED_LOCK" ]; then
         npm install
     else
-        echo "▶️ package-lock.json it was not updated, the installation process of will be jumped."
+        echo "▶️ package-lock.json was not updated; skipping installation process."
     fi
     npm run build
 @endtask
