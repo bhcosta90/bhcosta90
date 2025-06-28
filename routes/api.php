@@ -2,10 +2,7 @@
 
 declare(strict_types = 1);
 
-use App\Http\Controllers\Api\NetworkController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
-use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
 
 foreach (config('tenancy.central_domains') as $domain) {
     Route::domain($domain)->middleware('api')->group(function (): void {
@@ -22,20 +19,3 @@ foreach (config('tenancy.central_domains') as $domain) {
         ]));
     });
 }
-
-Route::group([
-    'prefix'     => '/{tenant}',
-    'middleware' => [
-        InitializeTenancyByPath::class,
-    ],
-], function (): void {
-    Route::middleware('web')->group(function () {
-        Route::view('/dashboard', 'dashboard')->name('dashboard');
-        Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
-        Route::post('login', [AuthenticatedSessionController::class, 'store']);
-    });
-
-    Route::middleware('api')->group(function () {
-        Route::get('{network}', [NetworkController::class, 'redirect']);
-    });
-});

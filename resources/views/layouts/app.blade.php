@@ -38,9 +38,9 @@
                                 </button>
                             </div>
                         </x-slot:action>
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout', ['tenant' => tenant()]) }}">
                             @csrf
-                            <x-dropdown.items :text="__('Profile')" :href="route('user.profile')" />
+                            <x-dropdown.items :text="__('Profile')" :href="route('user.profile', ['tenant' => tenant()])" />
                             <x-dropdown.items :text="__('Logout')" onclick="event.preventDefault(); this.closest('form').submit();" separator />
                         </form>
                     </x-dropdown>
