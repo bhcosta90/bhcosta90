@@ -69,7 +69,7 @@
     if [ -n "$UPDATED_LOCK" ]; then
         composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
     else
-        echo "▶️ composer.lock não foi atualizado, o processo de instalação será pulado."
+        echo "▶️ composer.lock it was not updated, the installation process of will be jumped."
     fi
 
     rm -f bootstrap/cache/{config.php,events.php,packages.php,routes-v7.php,services.php}
