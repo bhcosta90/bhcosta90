@@ -3,7 +3,7 @@
         <img src="{{ asset('/assets/images/tsui.png') }}" />
     </div>
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login', ['tenant' => tenant()]) }}">
         @csrf
 
         <div class="space-y-4">
