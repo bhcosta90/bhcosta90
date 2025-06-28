@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Database\Factories;
 
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -37,10 +38,14 @@ final class UserFactory extends Factory
         ?int $totalDays = null,
         ?string $date = null
     ): self {
-        return $this->afterCreating(fn () => Tenant::factory()->create(array_filter([
-            'id'              => $domain ?? fake()->unique()->domainName(),
-            'total_redirects' => $totalDays,
-            'date_expired'    => $date,
-        ], fn ($value): bool => !is_null($value))));
+        return $this->afterCreating(function (User $user) use ($domain, $totalDays, $date): void {
+            $tenant = Tenant::factory()->create(array_filter([
+                'id'              => $domain ?? fake()->unique()->domainName(),
+                'total_redirects' => $totalDays,
+                'date_expired'    => $date,
+            ], fn ($value): bool => !is_null($value)));
+
+            $tenant->users()->attach($user);
+        });
     }
 }

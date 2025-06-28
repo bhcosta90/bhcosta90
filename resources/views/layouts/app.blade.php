@@ -38,9 +38,9 @@
                                 </button>
                             </div>
                         </x-slot:action>
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout', ['tenant' => tenant()]) }}">
                             @csrf
-                            <x-dropdown.items :text="__('Profile')" :href="route('user.profile')" />
+                            <x-dropdown.items :text="__('Profile')" :href="route('user.profile', ['tenant' => tenant()])" />
                             <x-dropdown.items :text="__('Logout')" onclick="event.preventDefault(); this.closest('form').submit();" separator />
                         </form>
                     </x-dropdown>
@@ -54,9 +54,7 @@
                         <img src="{{ asset('/assets/images/tsui.png') }}" width="40" height="40" />
                     </div>
                 </x-slot:brand>
-                <x-side-bar.item text="Dashboard" icon="home" :route="route('dashboard')" />
-                <x-side-bar.item text="Users" icon="users" :route="route('users.index')" />
-                <x-side-bar.item text="Welcome Page" icon="arrow-uturn-left" :route="route('welcome')" />
+                <x-side-bar.item text="Dashboard" icon="home" :href="route('dashboard', ['tenant' => tenant()])" />
             </x-side-bar>
         </x-slot:menu>
         {{ $slot }}

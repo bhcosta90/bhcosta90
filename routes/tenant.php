@@ -2,9 +2,11 @@
 
 declare(strict_types = 1);
 
+use App\Http\Controllers\Api\NetworkController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Livewire\User\Profile;
 use Illuminate\Support\Facades\Route;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
-use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
+use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,10 +20,20 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 |
 */
 
-Route::middleware([
-    'web',
-    InitializeTenancyByDomain::class,
-    PreventAccessFromCentralDomains::class,
-])->group(function (): void {
-    Route::get('/', fn (): string => 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id'));
+Route::group([
+    'prefix'     => '/{tenant}',
+    'middleware' => [
+        InitializeTenancyByPath::class,
+    ],
+], function (): void {
+    Route::middleware('web')->group(function (): void {
+        Route::view('/dashboard', 'dashboard')->name('dashboard');
+        Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
+        Route::post('login', [AuthenticatedSessionController::class, 'store']);
+        Route::get('/user/profile', Profile::class)->name('user.profile');
+    });
+
+    Route::middleware('api')->group(function (): void {
+        Route::get('{network}', [NetworkController::class, 'redirect']);
+    });
 });
