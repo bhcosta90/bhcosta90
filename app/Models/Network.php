@@ -18,7 +18,7 @@ final class Network extends Model
     use HasUlids;
     use SoftDeletes;
 
-    public const CACHE_KEY = '20250523162700';
+    public const CACHE_KEY = '20250701';
 
     protected $casts = [
         'clicks' => 'integer',
