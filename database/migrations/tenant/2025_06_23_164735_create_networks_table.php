@@ -14,7 +14,7 @@ return new class() extends Migration {
             $table->string('tenant_id')->index();
             $table->string('name');
             $table->string('endpoint');
-            $table->string('clicks')->default('0');
+            $table->unsignedBigInteger('clicks')->default(0);
             $table->timestamps();
             $table->softDeletes();
 
