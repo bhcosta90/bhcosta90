@@ -3,7 +3,7 @@
         <img src="{{ asset('/assets/images/tsui.png') }}" />
     </div>
 
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ tenantRoute('register') }}">
         @csrf
 
         <div>
@@ -27,7 +27,7 @@
         </div>
 
         <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md" href="{{ route('login') }}">
+            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md" href="{{ tenantRoute('login') }}">
                 {{ __('Already registered?') }}
             </a>
 
