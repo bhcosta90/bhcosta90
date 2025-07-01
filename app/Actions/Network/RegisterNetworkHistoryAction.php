@@ -19,7 +19,6 @@ final class RegisterNetworkHistoryAction implements ShouldQueue
     {
         return DB::transaction(function () use ($input) {
             $network = Network::whereId($input->networkId)->lockForUpdate()->sole();
-
             $network->increment('clicks');
 
             /** @var NetworkHistory $history */
