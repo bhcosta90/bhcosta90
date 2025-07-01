@@ -22,10 +22,7 @@
 
 @story('reset', ['on' => 'web'])
     pause-horizon
-    update-code
     reset-database
-    php-install-dependencies
-    php-artisan-config-cache
     start-horizon
 @endstory
 
