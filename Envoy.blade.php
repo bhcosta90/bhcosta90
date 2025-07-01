@@ -62,8 +62,7 @@
 @task('php-install-dependencies')
     cd {{ $app_dir }}
 
-    UPDATED_LOCK=$(git diff --name-only HEAD@{1} HEAD | grep -E 'composer\.lock|composer\.json' || true)
-    if [ -n "$UPDATED_LOCK" ]; then
+    if git diff --name-only HEAD@{1} HEAD | grep -qE 'composer\.lock|composer\.json'; then
         composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
     else
         echo "⏭️ composer.lock was not updated; skipping installation process."
@@ -75,8 +74,7 @@
 @task('node-install-dependencies')
     cd {{ $app_dir }}
 
-    UPDATED_LOCK=$(git diff --name-only HEAD@{1} HEAD | grep -E 'package-lock\.json|package\.json' || true)
-    if [ -n "$UPDATED_LOCK" ]; then
+    if git diff --name-only HEAD@{1} HEAD | grep -qE 'package-lock\.json|package\.json'; then
         npm install
     else
         echo "⏭️ package-lock.json was not updated; skipping installation process."
