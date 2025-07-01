@@ -89,12 +89,6 @@
     php artisan migrate --force
 @endtask
 
-@task('reset-database')
-    cd {{ $app_dir }}
-    composer install
-    php artisan migrate:fresh --seed --force
-@endtask
-
 @task('php-artisan-config-cache')
     cd {{ $app_dir }}
     php artisan config:cache
