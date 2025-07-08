@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,5 +29,15 @@ final class Network extends Model
     public function histories(): HasMany
     {
         return $this->hasMany(NetworkHistory::class);
+    }
+
+    #[Scope]
+    public function byName(Builder $query, array | string | null $name): void
+    {
+        if (filled($name) && !is_array($name)) {
+            $name = [$name];
+        }
+
+        $query->when($name, fn ($query) => $query->whereIn($this->getTable() . '.name', $name));
     }
 }
