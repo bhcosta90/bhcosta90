@@ -6,17 +6,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\Network\RegisterNetworkHistoryAction;
 use App\Data\Network\RegisterNetworkHistoryInput;
-use App\Models\Network;
-use Cache;
+use App\Services\NetworkService;
 
 final class NetworkController
 {
-    public function redirect(string $name)
+    public function redirect(NetworkService $networkService, string $name)
     {
-        $network = Cache::remember(Network::CACHE_KEY . '_redirect_' . $name, now()->addDay(), fn () => Network::query()
-            ->select(['id', 'endpoint'])
-            ->whereName($name)
-            ->sole());
+        $network = $networkService->byName($name);
 
         RegisterNetworkHistoryAction::run(new RegisterNetworkHistoryInput(
             networkId: $network->id,
