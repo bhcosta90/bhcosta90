@@ -11,6 +11,7 @@ permissions:
 env:
   ENV_BASE: ${{ github.event.repository.name }}
   DOMAIN_BASE: bhcosta90.dev.br:8080
+  REPLICAS_CONFIG: "main:1,sandbox:1"
 
 jobs:
   setup:
@@ -29,11 +30,23 @@ jobs:
 
       - name: Run Laravel Tests
         uses: ./.github/actions/laravel-tests
-        if: github.event.action == 'closed' && github.event.pull_request.merged == true
+        #if: github.event.action == 'closed' && github.event.pull_request.merged == true
 
       - name: Deploy
-        if: github.event.action == 'closed' && github.event.pull_request.merged == true
+        #if: github.event.action == 'closed' && github.event.pull_request.merged == true
         run: |
           set -e
           BRANCH_NAME="${{ github.head_ref }}"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          
+          REPLICAS=1
+          IFS=',' read -ra CONFIG_ARRAY <<< "${{ env.REPLICAS_CONFIG }}"
+          for item in "${CONFIG_ARRAY[@]}"; do
+            IFS=':' read -ra PAIR <<< "$item"
+            if [[ "${PAIR[0]}" == "$BRANCH" ]]; then
+              REPLICAS="${PAIR[1]}"
+              break
+            fi
+          done
+
+          echo "🔢 Replicas for $BRANCH: $REPLICAS"
