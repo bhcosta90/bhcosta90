@@ -1,18 +1,23 @@
-# =========================
-# BASE (sua imagem base)
-# =========================
 FROM bhcosta90/bhcosta90:base AS base
-
 WORKDIR /var/www/html
 
 # =========================
-# ASSETS (NODE)
+# NODE BUILD
 # =========================
-FROM bhcosta90/bhcosta90:base AS node_builder
+FROM base AS node_builder
 
-RUN apk add --no-cache \
-    nodejs \
-    npm
+RUN apk add --no-cache nodejs npm
+
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+# =========================
+# PHP DEPENDENCIES
+# =========================
+FROM base AS composer_builder
 
 COPY composer.json composer.lock ./
 RUN composer install \
@@ -20,59 +25,30 @@ RUN composer install \
     --prefer-dist \
     --no-interaction \
     --no-scripts \
-    --optimize-autoloader
-
-WORKDIR /var/www/html
-
-COPY package.json package-lock.json* ./
-RUN npm install
-
-COPY . .
-RUN npm run build
-
-# =========================
-# APP
-# =========================
-FROM base AS app
-
-COPY --from=node_builder /var/www/html/vendor /var/www/html/vendor
-COPY --from=node_builder /var/www/html/public/build /var/www/html/public/build
-COPY . .
-
-RUN chmod +x ./entrypoint.sh
-
-# Garantir que a estrutura de pastas do storage existe
-RUN mkdir -p storage/framework/cache/data \
-             storage/framework/sessions \
-             storage/framework/views \
-             storage/logs \
-             bootstrap/cache
-
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 storage bootstrap/cache
-
-ENTRYPOINT ["./entrypoint.sh"]
-
-# =========================
-# DEV (for local development)
-# =========================
-FROM app AS dev
-ENTRYPOINT ["/entrypoint.sh"]
+    --optimize-autoloader \
+    --classmap-authoritative
 
 # =========================
 # FINAL
 # =========================
 FROM base
 
-COPY --from=app /var/www/html /var/www/html
+WORKDIR /var/www/html
+
+COPY --from=composer_builder /var/www/html/vendor ./vendor
+COPY --from=node_builder /var/www/html/public/build ./public/build
+COPY . .
 
 RUN chmod +x ./entrypoint.sh
 
-WORKDIR /var/www/html
+RUN mkdir -p storage/framework/cache/data \
+             storage/framework/sessions \
+             storage/framework/views \
+             storage/logs \
+             bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 storage bootstrap/cache
 
-# =========================
-# START
-# =========================
 EXPOSE 80
 
 ENTRYPOINT ["./entrypoint.sh"]
