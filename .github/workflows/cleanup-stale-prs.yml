@@ -7,6 +7,7 @@ on:
 
 env:
   DOMAIN_BASE: bhcosta90.dev.br
+  PROTECTED_BRANCHES_REGEX: "(master|main|develop|sandbox)"
 
 jobs:
   cleanup-stale-prs:
@@ -24,9 +25,9 @@ jobs:
             
             echo "🔍 Checking for stale PR containers (older than 24h)..."
             
-            # Listar containers que começam com o nome do repo e não são as branches fixas (main, develop, sandbox)
+            # Listar containers que começam com o nome do repo e não são as branches fixas
             # E que foram criados há mais de 24 horas
-            STALE_CONTAINERS=$(docker ps -a --format '{{.Names}} {{.CreatedAt}}' | grep "^${REPO}-" | grep -vE "${REPO}-(main|develop|sandbox)" | while read line; do
+            STALE_CONTAINERS=$(docker ps -a --format '{{.Names}} {{.CreatedAt}}' | grep "^${REPO}-" | grep -vE "${REPO}-${{ env.PROTECTED_BRANCHES_REGEX }}" | while read line; do
                 NAME=$(echo $line | awk '{print $1}')
                 CREATED_AT=$(echo $line | awk '{print $2" "$3" "$4}')
                 # Converter para timestamp (funciona em linux comum)
