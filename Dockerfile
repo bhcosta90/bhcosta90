@@ -10,7 +10,7 @@ WORKDIR /var/www/html
 # =========================
 FROM bhcosta90/bhcosta90:base AS node_builder
 
-RUN apt-get update && apt-get install -y \
+RUN apk add --no-cache \
     nodejs \
     npm
 
