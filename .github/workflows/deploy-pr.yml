@@ -11,10 +11,11 @@ permissions:
 env:
   ENV_BASE: ${{ github.event.repository.name }}
   DOMAIN_BASE: bhcosta90.dev.br:8080
+  PROTECTED_BRANCHES: '["main", "sandbox", "develop"]'
 
 jobs:
   deploy:
-    if: github.event.action != 'closed' && github.event.pull_request.draft == false
+    if: "github.event.action != 'closed' && github.event.pull_request.draft == false && !contains(fromJSON(env.PROTECTED_BRANCHES), github.head_ref)"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
