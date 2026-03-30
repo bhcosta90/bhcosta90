@@ -17,5 +17,3 @@ Route::middleware('api')->group(function (): void {
         'Content-Disposition' => 'inline; filename="bhcosta90.pdf"',
     ]));
 });
-
-require __DIR__ . '/auth.php';
