@@ -130,18 +130,6 @@ vi CaddyfilePreview
 {
     auto_https off
 }
-
-bhcosta90.dev.br {
-    reverse_proxy project-test-main:80
-}
-
-develop.bhcosta90.dev.br {
-    reverse_proxy project-test-develop:80
-}
-
-sandbox.bhcosta90.dev.br {
-    reverse_proxy project-test-sandbox:80
-}
 ```
 
 ```bash
