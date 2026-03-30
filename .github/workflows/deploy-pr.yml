@@ -2,7 +2,7 @@ name: PR Deploy
 
 on:
   pull_request:
-    types: [synchronize]
+    types: [opened, synchronize, closed]
 
 permissions:
   pull-requests: write
@@ -10,7 +10,9 @@ permissions:
 
 env:
   ENV_BASE: ${{ github.event.repository.name }}
-  DOMAIN_BASE: bhcosta90.dev.br:8080
+  DOMAIN_BASE: bhcosta90.dev.br
+  REPLICAS_CONFIG: "main:1,sandbox:1"
+  TARGET_REF: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref || github.event.pull_request.head.ref }}
 
 jobs:
   setup:
@@ -29,4 +31,57 @@ jobs:
 
       - name: Run Laravel Tests
         uses: ./.github/actions/laravel-tests
-        if: github.event.action == 'synchronize'
+
+      - name: Set image name
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BRANCH_NAME="${{ github.head_ref }}"
+          else
+            BRANCH_NAME="${{ github.ref_name }}"
+          fi
+          echo "BRANCH_NAME=${{ github.base_ref }}" >> $GITHUB_ENV
+          echo "IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:$BRANCH_NAME" >> $GITHUB_ENV
+          echo "IMAGE_LATEST=${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest" >> $GITHUB_ENV
+
+      # 🏷️ Update version.txt
+      - name: Update version.txt with commit hash
+        run: |
+          echo "${{ github.sha }}" | cut -c1-7 > version.txt
+          date +" %Y-%m-%d %H:%M:%S" >> version.txt
+
+      # 🔐 Login Docker Hub
+      - name: Login no Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      # 🏗️ Build
+      - name: Build da imagem
+        run: docker build -t $IMAGE --target app .
+
+      # 🏷️ Tag latest (opcional mas recomendado)
+      - name: Tag latest
+        run: docker tag $IMAGE $IMAGE_LATEST
+
+      # 📤 Push
+      - name: Push da imagem
+        run: |
+          docker push $IMAGE
+          docker push $IMAGE_LATEST
+
+      - name: Deploy on server
+        run: |
+          set -e
+          BRANCH_NAME="${{ env.TARGET_REF }}"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "Deploying branch: $BRANCH_NAME"
+          
+          REPLICAS=1
+          IFS=',' read -ra CONFIG_ARRAY <<< "${{ env.REPLICAS_CONFIG }}"
+          for item in "${CONFIG_ARRAY[@]}"; do
+            IFS=':' read -ra PAIR <<< "$item"
+            if [[ "${PAIR[0]}" == "$BRANCH_NAME" ]]; then
+              REPLICAS="${PAIR[1]}"
+              break
+            fi
+          done
+
+          echo "🔢 Replicas for $BRANCH: $REPLICAS"
