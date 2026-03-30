@@ -24,7 +24,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          BRANCH_NAME=$(echo "${{ github.head_ref }}" | sed 's/\//-/g')
+          BRANCH_NAME=$(echo "${{ github.event.pull_request.head.ref }}" | sed 's/\//-/g')
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           IMAGE="${{ secrets.DOCKERHUB_USERNAME }}"
           REPO_NAME="${{ github.event.repository.name }}"
