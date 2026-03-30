@@ -62,21 +62,21 @@ rm -rf ./bootstrap/cache/*.php || echo "Não foi possível limpar cache do boots
 echo "✅ Tarefas do Laravel concluídas!"
 
 if [ "$1" = "worker" ]; then
-    echo "⏸️  Checking Horizon status..."
-    # Usar || true para evitar que o set -e quebre o script se o Redis estiver inacessível
-    php artisan horizon:pause || echo "⚠️  Horizon pause falhou (pode ser o primeiro deploy)"
-
-    echo "⏳  Waiting for running jobs to finish..."
-    while php artisan horizon:status 2>/dev/null | grep -q running; do
-      echo "⏳  Still processing jobs... waiting 5s"
-      sleep 5
-    done
-
-    echo "♻️  Restarting Horizon..."
-    php artisan horizon:terminate || echo "⚠️  Horizon terminate falhou"
-
-    echo "▶️  Starting Horizon..."
-    exec php artisan horizon
+#    echo "⏸️  Checking Horizon status..."
+#    # Usar || true para evitar que o set -e quebre o script se o Redis estiver inacessível
+#    php artisan horizon:pause || echo "⚠️  Horizon pause falhou (pode ser o primeiro deploy)"
+#
+#    echo "⏳  Waiting for running jobs to finish..."
+#    while php artisan horizon:status 2>/dev/null | grep -q running; do
+#      echo "⏳  Still processing jobs... waiting 5s"
+#      sleep 5
+#    done
+#
+#    echo "♻️  Restarting Horizon..."
+#    php artisan horizon:terminate || echo "⚠️  Horizon terminate falhou"
+#
+#    echo "▶️  Starting Horizon..."
+#    exec php artisan horizon
 fi
 
 exec /usr/local/bin/docker-php-entrypoint-base.sh
