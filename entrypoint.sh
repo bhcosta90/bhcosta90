@@ -17,20 +17,34 @@ chmod -R 775 ./storage ./bootstrap/cache
 
 # Se o primeiro argumento for 'worker', rodar o worker e sair
 if [ "$1" = "worker" ]; then
-    echo "⏸️ Pausing Horizon..."
-    php artisan horizon:pause
+    if php artisan list | grep -q "horizon"; then
+        echo "🚀 Horizon detected"
 
-    echo "⏳  Waiting for running jobs to finish..."
-    while php artisan horizon:status | grep -q running; do
-      echo "⏳  Still processing jobs... waiting 5s"
-      sleep 5
-    done
+        echo "⏸️ Pausing Horizon..."
+        php artisan horizon:pause || true
 
-    echo "♻️ Restarting Horizon..."
-    php artisan horizon:terminate
+        echo "⏳ Waiting for running jobs to finish..."
+        while php artisan horizon:status | grep -q "running"; do
+          echo "⏳ Still processing jobs... waiting 5s"
+          sleep 5
+        done
 
-    echo "▶️ Starting Horizon..."
-    exec php artisan horizon
+        echo "♻️ Restarting Horizon..."
+        php artisan horizon:terminate || true
+
+        echo "▶️ Starting Horizon..."
+        exec php artisan horizon
+
+      else
+        echo "⚙️ Horizon NOT found → using queue:work"
+
+        exec php artisan queue:work \
+          --sleep=3 \
+          --tries=3 \
+          --timeout=90 \
+          --max-time=3600 \
+          --memory=256
+      fi
 fi
 
 # --- GERENCIAMENTO DE ENV ---
