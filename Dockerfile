@@ -1,7 +1,7 @@
 # =========================
 # BASE (sua imagem base)
 # =========================
-FROM bhcosta90/bhcosta90:base:base AS base
+FROM bhcosta90/bhcosta90:base AS base
 
 WORKDIR /var/www/html
 
