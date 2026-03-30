@@ -14,7 +14,10 @@ env:
 
 jobs:
   deploy:
-    if: github.event.action != 'closed' && github.event.pull_request.draft == false
+    if: |
+      github.event.action != 'closed' && 
+      github.event.pull_request.draft == false && 
+      !contains(fromJSON('["main", "sandbox", "develop"]'), github.head_ref)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -120,7 +123,7 @@ jobs:
             })
 
   cleanup:
-    if: github.event.action == 'closed'
+    if: github.event.action == 'closed' && !contains(fromJSON('["main", "sandbox", "develop"]'), github.head_ref)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
