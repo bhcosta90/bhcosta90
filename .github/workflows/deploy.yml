@@ -34,7 +34,13 @@ jobs:
       # 🏷️ Nome da imagem
       - name: Set image name
         run: |
-          echo "IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ github.ref_name }}" >> $GITHUB_ENV
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BRANCH_NAME="${{ github.head_ref }}"
+          else
+            BRANCH_NAME="${{ github.ref_name }}"
+          fi
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:$BRANCH_NAME" >> $GITHUB_ENV
           echo "IMAGE_LATEST=${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest" >> $GITHUB_ENV
 
       # 🏷️ Update version.txt
@@ -72,7 +78,7 @@ jobs:
           script: |
             set -e
 
-            BRANCH=${{ github.ref_name }}
+            BRANCH="${{ env.BRANCH_NAME }}"
             REPO=${{ github.event.repository.name }}
             USER=${{ secrets.DOCKERHUB_USERNAME }}
 
