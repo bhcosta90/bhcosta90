@@ -4,9 +4,6 @@ on:
   push:
     branches: [master, main, sandbox, develop]
 
-  pull_request:
-    branches: [master, main, sandbox, develop]
-
 env:
   ENV_BASE: .env
   REPLICAS_CONFIG: "main:1,sandbox:1"
