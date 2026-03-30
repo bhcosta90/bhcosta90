@@ -123,6 +123,9 @@ jobs:
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set branch name (sanitized)
         run: |
           BRANCH_NAME=$(echo "${{ github.head_ref }}" | sed 's/\//-/g')
