@@ -32,6 +32,9 @@ jobs:
         run: |
           echo "$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7) $(date +'%Y-%m-%d %H:%M:%S')" > version.txt
 
+      - name: Run Laravel Tests
+        uses: ./.github/actions/laravel-tests
+
       - name: Docker Setup
         uses: ./.github/actions/docker-setup
         with:
