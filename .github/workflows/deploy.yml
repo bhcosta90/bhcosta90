@@ -5,10 +5,6 @@ on:
     #branches: [master, main, sandbox, develop]
     branches: [aaaaaaaa]
 
-  pull_request:
-    #branches: [master, main, sandbox, develop]
-    branches: [aaaaaaaa]
-
 env:
   ENV_BASE: .env
   REPLICAS_CONFIG: "main:1,sandbox:1"
