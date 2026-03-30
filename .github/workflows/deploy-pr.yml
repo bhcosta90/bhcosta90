@@ -2,7 +2,7 @@ name: PR Deploy
 
 on:
   pull_request:
-    types: [synchronize]
+    types: [opened, synchronize, closed]
 
 permissions:
   pull-requests: write
