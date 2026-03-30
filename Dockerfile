@@ -8,7 +8,11 @@ WORKDIR /var/www/html
 # =========================
 # ASSETS (NODE)
 # =========================
-FROM node:20-alpine AS node_builder
+FROM bhcosta90/bhcosta90:base AS node_builder
+
+RUN apt-get update && apt-get install -y \
+    nodejs \
+    npm
 
 COPY composer.json composer.lock ./
 RUN composer install \
