@@ -6,9 +6,9 @@ FROM bhcosta90/bhcosta90:base AS base
 WORKDIR /var/www/html
 
 # =========================
-# DEPENDENCIES (CACHE)
+# ASSETS (NODE)
 # =========================
-FROM base AS vendor
+FROM node:20-alpine AS node_builder
 
 COPY composer.json composer.lock ./
 RUN composer install \
@@ -17,11 +17,6 @@ RUN composer install \
     --no-interaction \
     --no-scripts \
     --optimize-autoloader
-
-# =========================
-# ASSETS (NODE)
-# =========================
-FROM node:20-alpine AS node_builder
 
 WORKDIR /var/www/html
 
@@ -36,7 +31,7 @@ RUN npm run build
 # =========================
 FROM base AS app
 
-COPY --from=vendor /var/www/html/vendor /var/www/html/vendor
+COPY --from=node_builder /var/www/html/vendor /var/www/html/vendor
 COPY --from=node_builder /var/www/html/public/build /var/www/html/public/build
 COPY . .
 
