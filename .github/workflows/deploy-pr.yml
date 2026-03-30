@@ -38,6 +38,7 @@ jobs:
           set -e
           BRANCH_NAME="${{ github.head_ref }}"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "Deploying branch: $BRANCH_NAME"
           
           REPLICAS=1
           IFS=',' read -ra CONFIG_ARRAY <<< "${{ env.REPLICAS_CONFIG }}"
