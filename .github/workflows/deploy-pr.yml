@@ -29,4 +29,11 @@ jobs:
 
       - name: Run Laravel Tests
         uses: ./.github/actions/laravel-tests
-        if: github.event.action == 'synchronize'
+        if: github.event.action == 'closed' && github.event.pull_request.merged == true
+
+      - name: Deploy
+        if: github.event.action == 'closed' && github.event.pull_request.merged == true
+        run: |
+          set -e
+          BRANCH_NAME="${{ github.head_ref }}"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
