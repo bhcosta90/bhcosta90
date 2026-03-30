@@ -17,7 +17,7 @@ chmod -R 775 ./storage ./bootstrap/cache
 
 # Se o primeiro argumento for 'worker', rodar o worker e sair
 if [ "$1" = "worker" ]; then
-    if php artisan list | grep -q "horizon"; then
+    if php artisan list | grep -q "verify-horizon"; then
         echo "🚀 Horizon detected"
 
         echo "⏸️ Pausing Horizon..."
