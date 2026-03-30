@@ -1,0 +1,55 @@
+name: 'Prepare Environment'
+description: 'Setup environment variables and update version.txt'
+inputs:
+  ref_name:
+    description: 'Branch or PR reference name'
+    required: true
+  repo_name:
+    description: 'Repository name'
+    required: true
+  dockerhub_username:
+    description: 'Docker Hub Username'
+    required: true
+  sha:
+    description: 'Commit SHA'
+    required: true
+  is_pr:
+    description: 'Whether this is a PR (true/false)'
+    default: 'false'
+
+outputs:
+  branch_name:
+    description: 'Sanitized branch name'
+    value: ${{ steps.vars.outputs.branch_name }}
+  image:
+    description: 'Docker image tag'
+    value: ${{ steps.vars.outputs.image }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set vars
+      id: vars
+      shell: bash
+      run: |
+        if [ "${{ inputs.is_pr }}" == "true" ]; then
+          BRANCH_NAME=$(echo "${{ inputs.ref_name }}" | sed 's/\//-/g')
+        else
+          BRANCH_NAME="${{ inputs.ref_name }}"
+        fi
+        
+        REPO_NAME="${{ inputs.repo_name }}"
+        IMAGE="${{ inputs.dockerhub_username }}/$REPO_NAME:$BRANCH_NAME"
+        
+        echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+        echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
+        echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+        
+        # Output values for use in other steps
+        echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+        echo "image=$IMAGE" >> $GITHUB_OUTPUT
+
+    - name: Update version.txt
+      shell: bash
+      run: |
+        echo "$(echo ${{ inputs.sha }} | cut -c1-7) $(date +'%Y-%m-%d %H:%M:%S')" > version.txt
