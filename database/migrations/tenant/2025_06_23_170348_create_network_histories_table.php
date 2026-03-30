@@ -12,7 +12,9 @@ return new class() extends Migration {
         Schema::create('network_histories', function (Blueprint $table): void {
             $table->ulid('id')->primary();
             $table->foreignUlid('network_id')->constrained('networks');
-            $table->ipAddress();
+            $table->ipAddress()->index();
+            $table->string('state')->nullable();
+            $table->string('city')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
