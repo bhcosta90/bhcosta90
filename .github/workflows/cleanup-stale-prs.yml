@@ -1,0 +1,77 @@
+---
+name: PR Auto Cleanup (24h)
+
+"on":
+  schedule:
+    - cron: '0 * * * *'  # Roda a cada hora
+  workflow_dispatch:  # Permite rodar manualmente
+
+env:
+  DOMAIN_BASE: bhcosta90.dev.br:8080
+
+jobs:
+  cleanup-stale-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup old PR containers and images
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            REPO="${{ github.event.repository.name }}"
+            CADDYFILE="$HOME/CaddyfilePreview"
+
+            echo "🔍 Checking for stale PR services (older than 24h)..."
+
+            # Listar serviços que começam com o nome do repo e
+            # não são as branches fixas (main, sandbox, develop)
+            # E que foram criados há mais de 24 horas
+            STALE_SERVICES=$(docker service ls --format '{{.Name}}' | \
+              grep "^${REPO}-" | grep -vE "${REPO}-(main|sandbox|develop)" | \
+              while read -r SERVICE; do
+                # Pegar data de criação do serviço
+                CREATED_AT=$(docker service inspect "$SERVICE" \
+                  --format '{{.CreatedAt}}')
+                # Converter para timestamp
+                CREATE_TS=$(date -d "$CREATED_AT" +%s)
+                NOW_TS=$(date +%s)
+                DIFF=$(( (NOW_TS - CREATE_TS) / 3600 ))
+
+                if [ "$DIFF" -ge 24 ]; then
+                    echo "$SERVICE"
+                fi
+            done)
+
+            if [ -z "$STALE_SERVICES" ]; then
+                echo "✅ No stale services found."
+                exit 0
+            fi
+
+            for SERVICE in $STALE_SERVICES; do
+                echo "🧹 Cleaning up stale service: $SERVICE"
+
+                # Extrair o nome da branch/PR do nome do serviço
+                # O formato é REPO-BRANCH-app ou REPO-BRANCH-worker
+                BRANCH_PART=$(echo "$SERVICE" | sed "s/^${REPO}-//" | \
+                  sed 's/-app$//' | sed 's/-worker$//')
+                DOMAIN="$BRANCH_PART.preview.${{ env.DOMAIN_BASE }}"
+
+                # Remover serviço
+                docker service rm "$SERVICE" >/dev/null 2>&1 || true
+
+                # Se for o serviço de app, remove do Caddy também
+                # e tenta limpar imagem
+                if [[ $SERVICE == *"-app" ]]; then
+                    echo "🌐 Removing $DOMAIN from Caddyfile"
+                    sed -i "/$DOMAIN {/,/}/d" "$CADDYFILE"
+
+                    USER="${{ secrets.DOCKERHUB_USERNAME }}"
+                    IMAGE="$USER/$REPO:$BRANCH_PART"
+                    docker rmi "$IMAGE" >/dev/null 2>&1 || true
+                fi
+            done
+
+            docker service update --force caddy-preview || true
+            echo "✅ Cleanup cycle finished."
