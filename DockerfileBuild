@@ -8,6 +8,7 @@ RUN apk add --no-cache \
     libpq-dev \
     oniguruma-dev \
     libzip-dev \
+    icu-dev \
     zip unzip \
     nginx \
     $PHPIZE_DEPS \
@@ -20,6 +21,7 @@ RUN apk add --no-cache \
         bcmath \
         pcntl \
         gd \
+        intl \
         zip \
     && pecl install redis \
     && docker-php-ext-enable redis \

@@ -1,56 +1,32 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "tallstackui/starter-kit",
+    "name": "laravel/laravel",
     "type": "project",
-    "description": "The TallStackUI Starter Kit for Laravel 12.",
-    "keywords": [
-        "laravel",
-        "framework",
-        "tallstackui"
-    ],
+    "description": "The skeleton application for the Laravel framework.",
+    "keywords": ["laravel", "framework"],
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Bruno Costa",
-            "email": "bhcosta90@gmail.com"
-        }
-    ],
     "require": {
         "php": "^8.3",
+        "filament/filament": "^5.0",
         "laravel/framework": "^13.0",
-        "laravel/horizon": "^5.33",
-        "laravel/sanctum": "^4.0",
-        "laravel/telescope": "^5.9",
-        "laravel/tinker": "^3.0",
-        "livewire/livewire": "^3.0.0",
-        "nunomaduro/essentials": "^1.0",
-        "quantumtecnology/actions": "^1.0",
-        "tallstackui/tallstackui": "^3.0.0"
+        "laravel/tinker": "^3.0"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^4.0",
         "fakerphp/faker": "^1.23",
-        "larastan/larastan": "^3.1",
-        "laravel/breeze": "^2.3",
-        "laravel/envoy": "^2.10",
-        "laravel/pail": "^1.2.2",
-        "laravel/pint": "^1.21",
-        "laravel/sail": "^1.41",
+        "laravel/pail": "^1.2.5",
+        "laravel/pint": "^1.27",
+        "lucascudo/laravel-pt-br-localization": "^3.0",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0",
-        "rector/rector": "^2.0"
+        "pestphp/pest": "^4.4",
+        "pestphp/pest-plugin-laravel": "^4.1"
     },
     "autoload": {
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        },
-        "files": [
-            "app/helper.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
@@ -58,9 +34,26 @@
         }
     },
     "scripts": {
+        "setup": [
+            "composer install",
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php artisan key:generate",
+            "@php artisan migrate --force",
+            "npm install",
+            "npm run build"
+        ],
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
+        ],
+        "test": [
+            "@php artisan config:clear --ansi",
+            "@php artisan test"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
@@ -69,42 +62,12 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "Composer\\Config::disableProcessTimeout",
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-            "@php artisan migrate --graceful --ansi",
-            "@php artisan db:seed",
-            "@composer update"
+            "@php artisan migrate --graceful --ansi"
         ],
-        "dev": [
-            "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=3\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
-        ],
-        "format": "./vendor/bin/pint",
-        "analyse": "./vendor/bin/phpstan analyse",
-        "test": "./vendor/bin/pest --parallel",
-        "ci": [
-            "Composer\\Config::disableProcessTimeout",
-            "@pint --test",
-            "@test"
-        ],
-        "ci:skyline": [
-          "Composer\\Config::disableProcessTimeout",
-          "@pint --test",
-          "@stan",
-          "@test"
-        ],
-        "pint": [
-            "vendor/bin/pint"
-        ],
-        "rector": [
-            "vendor/bin/rector process"
-        ],
-        "stan": [
-            "vendor/bin/phpstan analyse --memory-limit=2G"
-        ],
-        "deploy": [
-            "php vendor/bin/envoy deploy"
+        "pre-package-uninstall": [
+            "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ]
     },
     "extra": {
