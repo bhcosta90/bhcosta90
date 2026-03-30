@@ -17,24 +17,6 @@ chown -R www-data:www-data ./storage ./bootstrap/cache
 chmod -R 775 ./storage ./bootstrap/cache
 
 # Se o primeiro argumento for 'worker', rodar o worker e sair
-if [ "$1" = "worker" ]; then
-    echo "⏸️  Checking Horizon status..."
-    # Usar || true para evitar que o set -e quebre o script se o Redis estiver inacessível
-    php artisan horizon:pause || echo "⚠️  Horizon pause falhou (pode ser o primeiro deploy)"
-
-    echo "⏳  Waiting for running jobs to finish..."
-    while php artisan horizon:status 2>/dev/null | grep -q running; do
-      echo "⏳  Still processing jobs... waiting 5s"
-      sleep 5
-    done
-
-    echo "♻️  Restarting Horizon..."
-    php artisan horizon:terminate || echo "⚠️  Horizon terminate falhou"
-
-    echo "▶️  Starting Horizon..."
-    exec php artisan horizon
-fi
-
 echo "📂 Verificando .env em $(ls -la ./.env 2>/dev/null || echo 'NÃO ENCONTRADO')"
 
 # --- GERENCIAMENTO DE ENV ---
@@ -78,5 +60,23 @@ php artisan optimize || echo "⚠️ Alerta: optimize falhou, mas continuando...
 rm -rf ./bootstrap/cache/*.php || echo "Não foi possível limpar cache do bootstrap"
 
 echo "✅ Tarefas do Laravel concluídas!"
+
+if [ "$1" = "worker" ]; then
+    echo "⏸️  Checking Horizon status..."
+    # Usar || true para evitar que o set -e quebre o script se o Redis estiver inacessível
+    php artisan horizon:pause || echo "⚠️  Horizon pause falhou (pode ser o primeiro deploy)"
+
+    echo "⏳  Waiting for running jobs to finish..."
+    while php artisan horizon:status 2>/dev/null | grep -q running; do
+      echo "⏳  Still processing jobs... waiting 5s"
+      sleep 5
+    done
+
+    echo "♻️  Restarting Horizon..."
+    php artisan horizon:terminate || echo "⚠️  Horizon terminate falhou"
+
+    echo "▶️  Starting Horizon..."
+    exec php artisan horizon
+fi
 
 exec /usr/local/bin/docker-php-entrypoint-base.sh
