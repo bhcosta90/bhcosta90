@@ -1,0 +1,32 @@
+name: PR Deploy
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+env:
+  ENV_BASE: ${{ github.event.repository.name }}
+  DOMAIN_BASE: bhcosta90.dev.br:8080
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      protected_branches: ${{ env.PROTECTED_BRANCHES }}
+    steps:
+      - run: echo "Setup finished"
+
+  deploy:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Laravel Tests
+        uses: ./.github/actions/laravel-tests
+        if: github.event.action == 'synchronize'
