@@ -68,6 +68,17 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "ci": [
+          "Composer\\Config::disableProcessTimeout",
+          "@pint --test",
+          "@test"
+        ],
+        "ci:skyline": [
+          "Composer\\Config::disableProcessTimeout",
+          "@pint --test",
+          "@stan",
+          "@test"
         ]
     },
     "extra": {
