@@ -7,6 +7,7 @@ RUN apk add --no-cache \
     freetype-dev \
     libpq-dev \
     oniguruma-dev \
+    libzip-dev \
     zip unzip \
     nginx \
     $PHPIZE_DEPS \
