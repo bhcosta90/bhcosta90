@@ -1,0 +1,23 @@
+name: 'Build and Push Image'
+description: 'Build and Push Docker image'
+inputs:
+  image:
+    description: 'Docker image tag (main tag)'
+    required: true
+  image_latest:
+    description: 'Docker image latest tag (optional)'
+    default: ''
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build and Push image
+      shell: bash
+      run: |
+        docker build -t ${{ inputs.image }} --target app .
+        docker push ${{ inputs.image }}
+        
+        if [ -n "${{ inputs.image_latest }}" ]; then
+          docker tag ${{ inputs.image }} ${{ inputs.image_latest }}
+          docker push ${{ inputs.image_latest }}
+        fi
