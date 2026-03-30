@@ -5,7 +5,7 @@ on:
     branches: [master, main, sandbox, develop]
 
   pull_request:
-    branches: [master, main, sandbox, develop]
+    types: [opened, synchronize, closed]
 
 env:
   ENV_BASE: .env
