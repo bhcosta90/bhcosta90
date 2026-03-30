@@ -73,7 +73,7 @@ jobs:
           set -e
           BRANCH="${{ env.TARGET_REF }}"
           
-          if [[ ! ",${ALLOWED_BRANCHES}," =~ ",${BRANCH_NAME}," ]]; then
+          if [[ ",${ALLOWED_BRANCHES}," =~ ",${BRANCH_NAME}," ]]; then
             echo "⏭️ Branch não permitida"
             exit 0
           fi
@@ -203,7 +203,7 @@ jobs:
         run: |
           BRANCH_NAME="${{ env.TARGET_REF }}"
           
-          if [[ ",${ALLOWED_BRANCHES}," =~ ",${BRANCH_NAME}," ]]; then
+          if [[ ! ",${ALLOWED_BRANCHES}," =~ ",${BRANCH_NAME}," ]]; then
             echo "⏭️ Branch não permitida"
             exit 0
           fi
