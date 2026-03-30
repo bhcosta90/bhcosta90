@@ -79,4 +79,4 @@ rm -rf ./bootstrap/cache/*.php || echo "Não foi possível limpar cache do boots
 
 echo "✅ Tarefas do Laravel concluídas!"
 
-exec /usr/local/bin/docker-php-entrypoint-base.sh
+exec php artisan serve --host=0.0.0.0 --port=80
