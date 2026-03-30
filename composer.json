@@ -86,8 +86,13 @@
         "ci": [
             "Composer\\Config::disableProcessTimeout",
             "@pint --test",
-            "@stan",
             "@test"
+        ],
+        "ci:skyline": [
+          "Composer\\Config::disableProcessTimeout",
+          "@pint --test",
+          "@stan",
+          "@test"
         ],
         "pint": [
             "vendor/bin/pint"
