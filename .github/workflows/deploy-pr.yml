@@ -199,7 +199,7 @@ jobs:
 
           echo "✅ Deploy finalizado: $APP_NAME"
 
-      - name: Deploy on server (previw)
+      - name: Deploy on server (preview)
         run: |
           BRANCH_NAME="${{ env.TARGET_REF }}"
           
