@@ -170,7 +170,9 @@ jobs:
     steps:
       - name: Set branch name (sanitized)
         run: |
-          BRANCH_NAME=$(echo "${{ github.head_ref }}" | sed 's/\//-/g')
+          BRANCH_NAME=$(echo "${{ github.event.pull_request.head.ref }}" \
+            | tr '[:upper:]' '[:lower:]' \
+            | sed 's/[^a-z0-9._-]/-/g')
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
       - name: Cleanup on server
