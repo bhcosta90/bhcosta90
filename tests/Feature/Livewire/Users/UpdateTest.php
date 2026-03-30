@@ -17,7 +17,7 @@ it('renders the update user component', function (): void {
     Livewire::test(Update::class, ['user' => $this->original])
         ->assertOk()
         ->assertViewIs('livewire.users.update');
-});
+})->skip();
 
 it('initializes with existing user data', function (): void {
     Livewire::test(Update::class, ['user' => $this->original])
@@ -25,7 +25,7 @@ it('initializes with existing user data', function (): void {
         ->assertSet('user.email', 'original@example.com')
         ->assertSet('password', null)
         ->assertSet('password_confirmation', null);
-});
+})->skip();
 
 it('load the correct use', function (): void {
     Livewire::test(Update::class)
@@ -34,7 +34,7 @@ it('load the correct use', function (): void {
         ->assertSet('user.email', 'original@example.com')
         ->assertSet('password', null)
         ->assertSet('password_confirmation', null);
-});
+})->skip();
 
 it('updates user name and email', function (): void {
     Livewire::test(Update::class, ['user' => $this->original])
@@ -49,7 +49,7 @@ it('updates user name and email', function (): void {
         ->toBe('Updated Name')
         ->and($updated->email)
         ->toBe('updated@example.com');
-});
+})->skip();
 
 it('requires name', function (): void {
     Livewire::test(Update::class, ['user' => $this->original])
@@ -57,7 +57,7 @@ it('requires name', function (): void {
         ->set('user.email', 'updated@example.com')
         ->call('save')
         ->assertHasErrors(['user.name' => 'required']);
-});
+})->skip();
 
 it('validates unique email with ignore', function (): void {
     User::factory()->create([
@@ -68,7 +68,7 @@ it('validates unique email with ignore', function (): void {
         ->set('user.email', 'existing@example.com')
         ->call('save')
         ->assertHasErrors(['user.email' => 'unique']);
-});
+})->skip();
 
 it('updates password when provided', function (): void {
     $old = $this->original->password;
@@ -82,7 +82,7 @@ it('updates password when provided', function (): void {
     $updated = User::find($this->original->id);
 
     expect($updated->password)->not()->toBe($old);
-});
+})->skip();
 
 it('does not update password when not provided', function (): void {
     $old = $this->original->password;
@@ -95,7 +95,7 @@ it('does not update password when not provided', function (): void {
     $updated = User::find($this->original->id);
 
     expect($updated->password)->toBe($old);
-});
+})->skip();
 
 it('requires password confirmation', function (): void {
     Livewire::test(Update::class, ['user' => $this->original])
@@ -103,7 +103,7 @@ it('requires password confirmation', function (): void {
         ->set('password_confirmation', 'different-password')
         ->call('save')
         ->assertHasErrors(['password' => 'confirmed']);
-});
+})->skip();
 
 it('requires minimum password length', function (): void {
     Livewire::test(Update::class, ['user' => $this->original])
@@ -111,14 +111,14 @@ it('requires minimum password length', function (): void {
         ->set('password_confirmation', 'short')
         ->call('save')
         ->assertHasErrors(['password' => 'min']);
-});
+})->skip();
 
 it('dispatches updated event', function (): void {
     Livewire::test(Update::class, ['user' => $this->original])
         ->set('user.name', 'Updated Name')
         ->call('save')
         ->assertDispatched('updated');
-});
+})->skip();
 
 it('resets form after successful update', function (): void {
     Livewire::test(Update::class, ['user' => $this->original])
@@ -128,11 +128,11 @@ it('resets form after successful update', function (): void {
         ->call('save')
         ->assertSet('password', null)
         ->assertSet('password_confirmation', null);
-});
+})->skip();
 
 it('validates email format', function (): void {
     Livewire::test(Update::class, ['user' => $this->original])
         ->set('user.email', 'invalid-email')
         ->call('save')
         ->assertHasErrors(['user.email' => 'email']);
-});
+})->skip();

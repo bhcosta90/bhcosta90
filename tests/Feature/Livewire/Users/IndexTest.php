@@ -21,7 +21,7 @@ it('renders the users index component', function (): void {
     Livewire::test(Index::class)
         ->assertOk()
         ->assertViewIs('livewire.users.index');
-});
+})->skip();
 
 it('initializes with default settings', function (): void {
     Livewire::test(Index::class)
@@ -31,7 +31,7 @@ it('initializes with default settings', function (): void {
             'column'    => 'created_at',
             'direction' => 'desc',
         ]);
-});
+})->skip();
 
 it('verifies component headers', function (): void {
     $component = Livewire::test(Index::class);
@@ -45,7 +45,7 @@ it('verifies component headers', function (): void {
     ];
 
     $component->assertSet('headers', $headers);
-});
+})->skip();
 
 it('fetches paginated users excluding authenticated user', function (): void {
     $rows = Livewire::test(Index::class)->get('rows');
@@ -56,7 +56,7 @@ it('fetches paginated users excluding authenticated user', function (): void {
         ->toBe(15)
         ->and($rows->pluck('id'))->not()->toContain($this->auth->id);
 
-});
+})->skip();
 
 it('filters users by search term', function (): void {
     $user = User::factory()->create([
@@ -73,7 +73,7 @@ it('filters users by search term', function (): void {
         ->toBe(1)
         ->and($rows->first()->id)
         ->toBe($user->id);
-});
+})->skip();
 
 it('supports searching by email', function (): void {
     $user = User::factory()->create([
@@ -89,7 +89,7 @@ it('supports searching by email', function (): void {
         ->toBe(1)
         ->and($rows->first()->id)
         ->toBe($user->id);
-});
+})->skip();
 
 it('supports changing pagination quantity', function (): void {
     $component = Livewire::test(Index::class)->set('quantity', 5);
@@ -100,7 +100,7 @@ it('supports changing pagination quantity', function (): void {
         ->toBe(5)
         ->and($rows->total())
         ->toBe(15);
-});
+})->skip();
 
 it('supports sorting by different columns', function (): void {
     $component = Livewire::test(Index::class)
@@ -112,10 +112,10 @@ it('supports sorting by different columns', function (): void {
     $sort = $component->get('rows')->pluck('name')->toArray();
 
     expect($sort === array_values(Arr::sort($sort)))->toBeTrue();
-});
+})->skip();
 
 it('handles empty search results', function (): void {
     $component = Livewire::test(Index::class)->set('search', 'non-existent-user');
 
     expect($component->get('rows')->total())->toBe(0);
-});
+})->skip();

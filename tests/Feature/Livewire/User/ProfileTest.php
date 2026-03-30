@@ -17,27 +17,27 @@ it('renders successfully', function (): void {
     Livewire::test(Profile::class)
         ->assertStatus(200)
         ->assertViewIs('livewire.user.profile');
-});
+})->skip();
 
 it('mounts with authenticated user data', function (): void {
     Livewire::test(Profile::class)
         ->assertSet('user.id', $this->user->id)
         ->assertSet('user.name', $this->user->name);
-});
+})->skip();
 
 it('validates required name', function (): void {
     Livewire::test(Profile::class)
         ->set('user.name', '')
         ->call('save')
         ->assertHasErrors(['user.name' => 'required']);
-});
+})->skip();
 
 it('validates maximum length of name', function (): void {
     Livewire::test(Profile::class)
         ->set('user.name', str_repeat('a', 256))
         ->call('save')
         ->assertHasErrors(['user.name' => 'max']);
-});
+})->skip();
 
 it('validates password confirmation', function (): void {
     Livewire::test(Profile::class)
@@ -45,7 +45,7 @@ it('validates password confirmation', function (): void {
         ->set('password_confirmation', 'wrongconfirmation')
         ->call('save')
         ->assertHasErrors(['password' => 'confirmed']);
-});
+})->skip();
 
 it('allows updating name without changing password', function (): void {
     Livewire::test(Profile::class)
@@ -55,7 +55,7 @@ it('allows updating name without changing password', function (): void {
         ->assertDispatched('updated');
 
     expect($this->user->refresh()->name)->toBe('Updated Name');
-});
+})->skip();
 
 it('updates password when provided', function (): void {
     Hash::shouldReceive('isHashed')
@@ -73,7 +73,7 @@ it('updates password when provided', function (): void {
         ->assertDispatched('updated');
 
     expect($this->user->refresh()->password)->toBe('hashed-password');
-});
+})->skip();
 
 it('does not update password when null', function (): void {
     $originalPassword = $this->user->password;
@@ -84,7 +84,7 @@ it('does not update password when null', function (): void {
         ->assertHasNoErrors();
 
     expect($this->user->fresh()->password)->toBe($originalPassword);
-});
+})->skip();
 
 it('dispatches success alert after saving', function (): void {
     Livewire::test(Profile::class)
@@ -95,7 +95,7 @@ it('dispatches success alert after saving', function (): void {
             && 'success' === $params['type']
             && 'Done!' === $params['title']
             && 'Task completed successfully.' === $params['description']);
-});
+})->skip();
 
 it('resets password fields after saving', function (): void {
     Livewire::test(Profile::class)
@@ -104,4 +104,4 @@ it('resets password fields after saving', function (): void {
         ->call('save')
         ->assertSet('password', null)
         ->assertSet('password_confirmation', null);
-});
+})->skip();

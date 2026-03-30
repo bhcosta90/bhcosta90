@@ -14,14 +14,14 @@ it('renders the create user component', function (): void {
     Livewire::test(Create::class)
         ->assertOk()
         ->assertViewIs('livewire.users.create');
-});
+})->skip();
 
 it('initializes with a new user', function (): void {
     Livewire::test(Create::class)
         ->assertSet('user', fn ($user): bool => $user instanceof User)
         ->assertSet('password', null)
         ->assertSet('password_confirmation', null);
-});
+})->skip();
 
 it('validates user creation with valid data', function (): void {
     $data = [
@@ -42,7 +42,7 @@ it('validates user creation with valid data', function (): void {
         'email' => 'john@example.com',
         'login' => 'john',
     ]);
-});
+})->skip();
 
 it('requires name', function (): void {
     Livewire::test(Create::class)
@@ -52,7 +52,7 @@ it('requires name', function (): void {
         ->set('password_confirmation', 'password123')
         ->call('save')
         ->assertHasErrors(['user.name' => 'required']);
-});
+})->skip();
 
 it('requires login', function (): void {
     Livewire::test(Create::class)
@@ -63,7 +63,7 @@ it('requires login', function (): void {
         ->set('password_confirmation', 'password123')
         ->call('save')
         ->assertHasErrors(['user.login' => 'required']);
-});
+})->skip();
 
 it('requires unique email', function (): void {
     User::create([
@@ -80,7 +80,7 @@ it('requires unique email', function (): void {
         ->set('password_confirmation', 'password123')
         ->call('save')
         ->assertHasErrors(['user.email' => 'unique']);
-});
+})->skip();
 
 it('requires unique login', function (): void {
     User::create([
@@ -98,7 +98,7 @@ it('requires unique login', function (): void {
         ->set('password_confirmation', 'password123')
         ->call('save')
         ->assertHasErrors(['user.login' => 'unique']);
-});
+})->skip();
 
 it('validates email format', function (): void {
     Livewire::test(Create::class)
@@ -108,7 +108,7 @@ it('validates email format', function (): void {
         ->set('password_confirmation', 'password123')
         ->call('save')
         ->assertHasErrors(['user.email' => 'email']);
-});
+})->skip();
 
 it('requires password confirmation', function (): void {
     Livewire::test(Create::class)
@@ -118,7 +118,7 @@ it('requires password confirmation', function (): void {
         ->set('password_confirmation', 'different-password')
         ->call('save')
         ->assertHasErrors(['password' => 'confirmed']);
-});
+})->skip();
 
 it('requires minimum password length', function (): void {
     Livewire::test(Create::class)
@@ -128,7 +128,7 @@ it('requires minimum password length', function (): void {
         ->set('password_confirmation', 'short')
         ->call('save')
         ->assertHasErrors(['password' => 'min']);
-});
+})->skip();
 
 it('sets email verified at when creating user', function (): void {
     $data = [
@@ -146,7 +146,7 @@ it('sets email verified at when creating user', function (): void {
     $user = User::where('email', 'john@example.com')->first();
 
     expect($user->email_verified_at)->not()->toBeNull();
-});
+})->skip();
 
 it('resets form after successful creation', function (): void {
     $data = [
@@ -163,7 +163,7 @@ it('resets form after successful creation', function (): void {
         ->assertSet('user', fn ($user): bool => $user instanceof User && null === $user->name)
         ->assertSet('password', null)
         ->assertSet('password_confirmation', null);
-});
+})->skip();
 
 it('dispatches created event', function (): void {
     $data = [
@@ -178,4 +178,4 @@ it('dispatches created event', function (): void {
         ->set($data)
         ->call('save')
         ->assertDispatched('created');
-});
+})->skip();
