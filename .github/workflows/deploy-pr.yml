@@ -20,6 +20,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Run Laravel Tests
+        uses: ./.github/actions/laravel-tests
+
       - name: Set branch name (sanitized)
         run: |
           BRANCH_NAME=$(echo "${{ github.head_ref }}" | sed 's/\//-/g')
