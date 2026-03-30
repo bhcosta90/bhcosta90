@@ -5,95 +5,188 @@ on:
     branches: [main, sandbox, develop]
 
 env:
-  REPLICAS_CONFIG: "main:3,sandbox:2"
+  ENV_BASE: .env
+  REPLICAS_CONFIG: "main:1,sandbox:1"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # 📥 Checkout
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set environment variables
-        run: |
-          BRANCH_NAME=${{ github.ref_name }}
-          REPO_NAME=${{ github.event.repository.name }}
-          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
-          echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
-          echo "IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/$REPO_NAME:$BRANCH_NAME" >> $GITHUB_ENV
-          echo "IMAGE_LATEST=${{ secrets.DOCKERHUB_USERNAME }}/$REPO_NAME:latest" >> $GITHUB_ENV
-
-      - name: Update version.txt
-        run: |
-          echo "${{ github.sha }}" | cut -c1-7 > version.txt
-          date +" %Y-%m-%d %H:%M:%S" >> version.txt
 
       - name: Run Laravel Tests
         uses: ./.github/actions/laravel-tests
 
-      - name: Docker Setup
-        uses: ./.github/actions/docker-setup
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          token: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and Push image
+      # 🔐 SSH
+      - name: Setup SSH
         run: |
-          docker build -t $IMAGE --target app .
-          docker tag $IMAGE $IMAGE_LATEST
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      # 🏷️ Nome da imagem
+      - name: Set image name
+        run: |
+          echo "IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ github.ref_name }}" >> $GITHUB_ENV
+          echo "IMAGE_LATEST=${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest" >> $GITHUB_ENV
+
+      # 🏷️ Update version.txt
+      - name: Update version.txt with commit hash
+        run: |
+          echo "${{ github.sha }}" | cut -c1-7 > version.txt
+          date +" %Y-%m-%d %H:%M:%S" >> version.txt
+
+      # 🔐 Login Docker Hub
+      - name: Login no Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      # 🏗️ Build
+      - name: Build da imagem
+        run: docker build -t $IMAGE --target app .
+
+      # 🏷️ Tag latest (opcional mas recomendado)
+      - name: Tag latest
+        run: docker tag $IMAGE $IMAGE_LATEST
+
+      # 📤 Push
+      - name: Push da imagem
+        run: |
           docker push $IMAGE
           docker push $IMAGE_LATEST
 
-      - name: Prepare Server Environment
+      # 🚀 Deploy no servidor
+      - name: Deploy on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          timeout: 120s
           script: |
             set -e
-            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-            docker pull ${{ env.IMAGE }}
+
+            BRANCH=${{ github.ref_name }}
+            REPO=${{ github.event.repository.name }}
+            USER=${{ secrets.DOCKERHUB_USERNAME }}
+
+            APP_NAME="$REPO-$BRANCH"
+            IMAGE="$USER/$REPO:$BRANCH"
+            ENV_BASE="${{ env.ENV_BASE }}"
+
+            echo "🚀 Deploying $APP_NAME"
+
+            # 🔑 Login no Docker Hub (no servidor)
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "$USER" --password-stdin
+
+            echo "📦 Baixando imagem..."
+            docker pull $IMAGE
+
+            # 🔥 Limpeza opcional (evita encher disco)
             docker image prune -a -f || true
+
+            # Garantir network
             docker network inspect web >/dev/null 2>&1 || docker network create --driver overlay web
 
-      - name: Resolve Replicas
-        run: |
-          REPLICAS=1
-          IFS=',' read -ra CONFIG_ARRAY <<< "${{ env.REPLICAS_CONFIG }}"
-          for item in "${CONFIG_ARRAY[@]}"; do
-            IFS=':' read -ra PAIR <<< "$item"
-            if [[ "${PAIR[0]}" == "${{ env.BRANCH_NAME }}" ]]; then
-              REPLICAS="${PAIR[1]}"
-              break
+            # Resolver ENV
+            # Verificar se existe arquivo específico da branch (ex: .env-main, .env-sandbox)
+            # Se não encontrar, tenta .env-production para as branches main ou master
+            # Senão assume o .env padrão
+            
+            echo "📂 Debugging variables:"
+            echo "   HOME: $HOME"
+            echo "   REPO: $REPO"
+            echo "   BRANCH: $BRANCH"
+            echo "   Checking files in: $HOME/$REPO/"
+            ls -la "$HOME/$REPO/" || echo "❌ Directory $HOME/$REPO/ not found!"
+
+            FINAL_ENV="$HOME/$REPO/.env-$BRANCH"
+            
+            # Caso especial: se branch for main ou master e .env-main/.env-master não existir, tentar .env-production
+            if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+                if [ ! -f "$FINAL_ENV" ]; then
+                    echo "🔍 Trying .env-production for main/master..."
+                    FINAL_ENV="$HOME/$REPO/.env-production"
+                fi
             fi
-          done
-          echo "REPLICAS=$REPLICAS" >> $GITHUB_ENV
 
-      - name: Deploy Worker
-        uses: ./.github/actions/docker-swarm-deploy
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          user: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          service_name: ${{ env.REPO_NAME }}-${{ env.BRANCH_NAME }}-worker
-          image: ${{ env.IMAGE }}
-          env_file: $HOME/${{ env.REPO_NAME }}/.env-${{ env.BRANCH_NAME }}
-          env_dir: $HOME/${{ env.REPO_NAME }}
-          prefix: ${{ env.REPO_NAME }}-${{ env.BRANCH_NAME }}_
-          command: worker
-          replicas: 1
+            if [ ! -f "$FINAL_ENV" ]; then
+              echo "⚠️ Specific file not found at $FINAL_ENV"
+              echo "🔍 Trying default .env from repository..."
+              FINAL_ENV="$HOME/$REPO/.env"
+            fi
 
-      - name: Deploy App
-        uses: ./.github/actions/docker-swarm-deploy
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          user: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          service_name: ${{ env.REPO_NAME }}-${{ env.BRANCH_NAME }}-app
-          image: ${{ env.IMAGE }}
-          env_file: $HOME/${{ env.REPO_NAME }}/.env-${{ env.BRANCH_NAME }}
-          env_dir: $HOME/${{ env.REPO_NAME }}
-          prefix: ${{ env.REPO_NAME }}-${{ env.BRANCH_NAME }}_
-          replicas: ${{ env.REPLICAS }}
+            if [ ! -f "$FINAL_ENV" ]; then
+              echo "❌ Nenhum arquivo .env encontrado em $HOME/$REPO/"
+              exit 1
+            fi
+
+            echo "✅ Usando ENV: $FINAL_ENV"
+
+            PREFIX="${REPO}-${BRANCH}_"
+
+            # Parse Replicas Config
+            REPLICAS=1
+            IFS=',' read -ra CONFIG_ARRAY <<< "${{ env.REPLICAS_CONFIG }}"
+            for item in "${CONFIG_ARRAY[@]}"; do
+              IFS=':' read -ra PAIR <<< "$item"
+              if [[ "${PAIR[0]}" == "$BRANCH" ]]; then
+                REPLICAS="${PAIR[1]}"
+                break
+              fi
+            done
+
+            echo "🔢 Replicas for $BRANCH: $REPLICAS"
+
+            update_or_create_service() {
+              SERVICE_NAME=$1
+              COMMAND=$2
+              SERVICE_REPLICAS=${3:-$REPLICAS}
+            
+              if docker service inspect ${SERVICE_NAME} >/dev/null 2>&1; then
+                echo "🔄 Atualizando ${SERVICE_NAME}..."
+                
+                docker service update --force \
+                  --image ${IMAGE} \
+                  --replicas ${SERVICE_REPLICAS} \
+                  --mount-add type=bind,src=${FINAL_ENV},dst=/var/www/html/.env \
+                  --env-rm REDIS_PREFIX \
+                  --env-rm CACHE_PREFIX \
+                  --env-rm SESSION_PREFIX \
+                  --env-rm HORIZON_PREFIX \
+                  --env-add REDIS_PREFIX=${PREFIX} \
+                  --env-add CACHE_PREFIX=${PREFIX}cache \
+                  --env-add SESSION_PREFIX=${PREFIX}session \
+                  --env-add HORIZON_PREFIX=${PREFIX}horizon: \
+                  --update-order start-first \
+                  --update-parallelism 1 \
+                  --update-delay 3s \
+                  ${SERVICE_NAME}
+            
+              else
+                echo "🚀 Criando ${SERVICE_NAME}..."
+                
+                docker service create \
+                  --name ${SERVICE_NAME} \
+                  --replicas ${SERVICE_REPLICAS} \
+                  --network web \
+                  --host host.docker.internal:host-gateway \
+                  --mount type=bind,src=${FINAL_ENV},dst=/var/www/html/.env \
+                  --env REDIS_PREFIX=${PREFIX} \
+                  --env CACHE_PREFIX=${PREFIX}cache \
+                  --env SESSION_PREFIX=${PREFIX}session \
+                  --env HORIZON_PREFIX=${PREFIX}horizon: \
+                  ${IMAGE} ${COMMAND}
+                fi
+            }
+
+            # --- WORKER ---
+            update_or_create_service "${APP_NAME}-worker" "worker" 1
+
+            # --- APP ---
+            update_or_create_service "${APP_NAME}-app" ""
+
+            echo "✅ Deploy finalizado: $APP_NAME"
