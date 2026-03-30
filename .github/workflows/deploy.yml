@@ -17,6 +17,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Run Laravel Tests
+        uses: ./.github/actions/laravel-tests
+
       # 🔐 SSH
       - name: Setup SSH
         run: |
