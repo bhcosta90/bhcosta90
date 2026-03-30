@@ -32,11 +32,10 @@ runs:
       id: vars
       shell: bash
       run: |
-        if [ "${{ inputs.is_pr }}" == "true" ]; then
-          BRANCH_NAME=$(echo "${{ inputs.ref_name }}" | sed 's/\//-/g')
-        else
-          BRANCH_NAME="${{ inputs.ref_name }}"
-        fi
+        # Sanitizar o nome da branch removendo barras e caracteres inválidos
+        # Comum em pull/35/merge ou refs/pull/...
+        RAW_BRANCH="${{ inputs.ref_name }}"
+        BRANCH_NAME=$(echo "$RAW_BRANCH" | sed 's/refs\/pull\///' | sed 's/\/merge//' | sed 's/\//-/g')
         
         REPO_NAME="${{ inputs.repo_name }}"
         IMAGE="${{ inputs.dockerhub_username }}/$REPO_NAME:$BRANCH_NAME"

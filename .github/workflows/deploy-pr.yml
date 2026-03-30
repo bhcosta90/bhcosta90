@@ -24,7 +24,7 @@ jobs:
       - name: Prepare Environment
         uses: ./.github/actions/prepare-env
         with:
-          ref_name: ${{ github.head_ref }}
+          ref_name: ${{ github.event.pull_request.head.ref }}
           repo_name: ${{ github.event.repository.name }}
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           sha: ${{ github.event.pull_request.head.sha }}
@@ -126,7 +126,7 @@ jobs:
       - name: Prepare Environment
         uses: ./.github/actions/prepare-env
         with:
-          ref_name: ${{ github.head_ref }}
+          ref_name: ${{ github.event.pull_request.head.ref }}
           repo_name: ${{ github.event.repository.name }}
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           sha: ${{ github.event.pull_request.head.sha }}
