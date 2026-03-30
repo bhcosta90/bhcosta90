@@ -36,7 +36,7 @@ jobs:
         #if: github.event.action == 'closed' && github.event.pull_request.merged == true
         run: |
           set -e
-          BRANCH_NAME="${{ github.head_ref }}"
+          BRANCH_NAME="${{ github.base_ref }}"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           echo "Deploying branch: $BRANCH_NAME"
           
