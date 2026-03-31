@@ -181,8 +181,7 @@ jobs:
             })
 
   cleanup:
-    needs: setup
-    if: github.event.action == 'closed' && !contains(fromJSON(needs.setup.outputs.protected_branches), github.head_ref)
+    if: github.event.action == 'closed'
     runs-on: ubuntu-latest
     steps:
       - name: Set branch name (sanitized)
