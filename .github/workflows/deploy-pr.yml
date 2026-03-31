@@ -149,7 +149,7 @@ jobs:
             update_or_create_service "${APP_NAME}-app" ""
 
             # --- Caddy Update ---
-            DOMAIN="http://{{ env.DOMAIN }}"
+            DOMAIN="http://${{ env.DOMAIN }}"
             CADDYFILE="$HOME/CaddyfilePreview"
             
             # No Swarm, o nome do serviço é usado como o hostname interno
