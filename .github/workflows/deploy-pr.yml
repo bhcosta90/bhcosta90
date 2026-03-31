@@ -3,11 +3,11 @@ name: PR Deploy
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-#    branches-ignore:
-#      - main
-#      - master
-#      - develop
-#      - sandbox
+    branches-ignore:
+      - main
+      - master
+      - develop
+      - sandbox
 
 permissions:
   pull-requests: write
@@ -19,16 +19,8 @@ env:
   PROTECTED_BRANCHES: '["master", "main", "develop", "sandbox"]'
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      protected_branches: ${{ env.PROTECTED_BRANCHES }}
-    steps:
-      - run: echo "Setup finished"
-
-  deploy-pr:
-    needs: setup
-    if: github.event.action != 'closed' && github.event.pull_request.draft == false && !contains(fromJSON(needs.setup.outputs.protected_branches), github.head_ref)
+  deploy:
+    if: github.event.action != 'closed' && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
