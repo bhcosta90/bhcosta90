@@ -2,10 +2,11 @@ name: Deploy
 
 on:
   push:
-    branches: [master, main, sandbox, develop]
-
-  pull_request:
-    branches: [master, main, sandbox, develop]
+    branches:
+      - main
+      - master
+      - develop
+      - sandbox
 
 env:
   ENV_BASE: .env
