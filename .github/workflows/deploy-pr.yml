@@ -26,7 +26,7 @@ jobs:
     steps:
       - run: echo "Setup finished"
 
-  deploy:
+  deploy-pr:
     needs: setup
     if: github.event.action != 'closed' && github.event.pull_request.draft == false && !contains(fromJSON(needs.setup.outputs.protected_branches), github.head_ref)
     runs-on: ubuntu-latest
