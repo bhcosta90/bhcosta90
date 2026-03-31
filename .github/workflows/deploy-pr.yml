@@ -121,6 +121,8 @@ jobs:
                   --env-add HORIZON_PREFIX=${PREFIX}horizon: \
                   --replicas ${SERVICE_REPLICAS} \
                   --update-order start-first \
+                  --update-parallelism 1 \
+                  --update-delay 3s \
                   ${SERVICE_NAME}
               else
                 echo "🚀 Criando ${SERVICE_NAME}..."
