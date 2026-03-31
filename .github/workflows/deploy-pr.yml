@@ -3,11 +3,6 @@ name: PR Deploy
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    branches-ignore:
-      - main
-      - master
-      - develop
-      - sandbox
 
 permissions:
   pull-requests: write
@@ -16,19 +11,10 @@ permissions:
 env:
   ENV_BASE: ${{ github.event.repository.name }}
   DOMAIN_BASE: bhcosta90.dev.br:8080
-  PROTECTED_BRANCHES: '["master", "main", "develop", "sandbox"]'
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      protected_branches: ${{ env.PROTECTED_BRANCHES }}
-    steps:
-      - run: echo "Setup finished"
-
-  deploy-pr:
-    needs: setup
-    if: github.event.action != 'closed' && github.event.pull_request.draft == false && !contains(fromJSON(needs.setup.outputs.protected_branches), github.head_ref)
+  deploy:
+    if: github.event.action != 'closed' && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -189,8 +175,7 @@ jobs:
             })
 
   cleanup:
-    needs: setup
-    if: github.event.action == 'closed' && !contains(fromJSON(needs.setup.outputs.protected_branches), github.head_ref)
+    if: github.event.action == 'closed'
     runs-on: ubuntu-latest
     steps:
       - name: Set branch name (sanitized)

@@ -8,13 +8,6 @@ on:
       - develop
       - sandbox
 
-#  pull_request:
-#    branches:
-#      - main
-#      - master
-#      - develop
-#      - sandbox
-#
 env:
   ENV_BASE: .env
   REPLICAS_CONFIG: "main:1,sandbox:1"
