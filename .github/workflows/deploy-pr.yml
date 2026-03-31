@@ -14,19 +14,19 @@ env:
 
 jobs:
   deploy:
-    if: github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true && github.event.pull_request.draft == false
+    if: (github.event_name == 'push') || (github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true && github.event.pull_request.draft == false)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        if: github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true
+        if: (github.event_name == 'push') || (github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true)
         uses: actions/checkout@v4
 
       - name: Run Laravel Tests
-        if: github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true
+        if: (github.event_name == 'push') || (github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true)
         uses: ./.github/actions/laravel-tests
 
       - name: Set branch name (sanitized)
-        if: github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true
+        if: (github.event_name == 'push') || (github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true)
         run: |
           BRANCH_NAME=$(echo "${{ github.head_ref }}" | sed 's/\//-/g')
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
@@ -34,24 +34,24 @@ jobs:
           echo "DOMAIN=$BRANCH_NAME.preview.${{ env.DOMAIN_BASE }}" >> $GITHUB_ENV
 
       - name: Update version.txt with commit hash
-        if: github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true
+        if: (github.event_name == 'push') || (github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true)
         run: |
           echo "$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7) $(date +'%Y-%m-%d %H:%M:%S')" > version.txt
 
       - name: Login no Docker Hub
-        if: github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true
+        if: (github.event_name == 'push') || (github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true)
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Build da imagem
-        if: github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true
+        if: (github.event_name == 'push') || (github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true)
         run: docker build -t $IMAGE --target app .
 
       - name: Push da imagem
-        if: github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true
+        if: (github.event_name == 'push') || (github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true)
         run: docker push $IMAGE
 
       - name: Deploy on server
-        if: github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true
+        if: (github.event_name == 'push') || (github.event.pull_request.state != 'closed' && github.event.pull_request.merged != true)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
