@@ -134,6 +134,10 @@ jobs:
                   --env CACHE_PREFIX=${PREFIX}cache \
                   --env SESSION_PREFIX=${PREFIX}session \
                   --env HORIZON_PREFIX=${PREFIX}horizon: \
+                  --label prometheus.enable=true \
+                  --label prometheus.port=${SERVICE_NAME}:80 \
+                  --label prometheus.path=/metrics \
+                  --label app=${SERVICE_NAME} \
                   ${IMAGE} ${COMMAND}
               fi
             }
