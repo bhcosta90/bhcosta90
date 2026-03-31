@@ -132,7 +132,7 @@ jobs:
                   --name ${SERVICE_NAME} \
                   --replicas ${SERVICE_REPLICAS} \
                   --network web \
-                  --host host.docker.internal:${HOST_IP} \
+                  --host host.internal:${HOST_IP} \
                   --mount type=bind,src=${FINAL_ENV},dst=/var/www/html/.env \
                   --env REDIS_PREFIX=${PREFIX} \
                   --env CACHE_PREFIX=${PREFIX}cache \
