@@ -10,7 +10,7 @@ permissions:
 
 env:
   ENV_BASE: ${{ github.event.repository.name }}
-  DOMAIN_BASE: http://bhcosta90.dev.br:8080
+  DOMAIN_BASE: bhcosta90.dev.br:8080
 
 jobs:
   deploy:
@@ -149,7 +149,7 @@ jobs:
             update_or_create_service "${APP_NAME}-app" ""
 
             # --- Caddy Update ---
-            DOMAIN="${{ env.DOMAIN }}"
+            DOMAIN="http://{{ env.DOMAIN }}"
             CADDYFILE="$HOME/CaddyfilePreview"
             
             # No Swarm, o nome do serviço é usado como o hostname interno
