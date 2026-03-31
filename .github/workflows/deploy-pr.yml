@@ -62,6 +62,7 @@ jobs:
             set -e
             PR_STATE="${{ github.event.pull_request.state }}"
             IS_MERGED="${{ github.event.pull_request.merged }}"
+            IS_DRAFT="${{ github.event.pull_request.draft }}"
             BRANCH="${{ env.BRANCH_NAME }}"
             REPO="${{ github.event.repository.name }}"
             USER="${{ secrets.DOCKERHUB_USERNAME }}"
@@ -69,10 +70,10 @@ jobs:
             IMAGE="$USER/$REPO:$BRANCH"
             ENV_BASE="${{ env.ENV_BASE }}"
             
-            echo "🚀 Deploying PR: $APP_NAME (State: $PR_STATE, Merged: $IS_MERGED)"
+            echo "🚀 Deploying PR: $APP_NAME (State: $PR_STATE, Merged: $IS_MERGED, Draft: $IS_DRAFT)"
             
-            if [ "$PR_STATE" = "closed" ] || [ "$IS_MERGED" = "true" ]; then
-              echo "🛑 PR is closed or merged. Skipping preview deployment."
+            if [ "$PR_STATE" = "closed" ] || [ "$IS_MERGED" = "true" ] || [ "$IS_DRAFT" = "true" ]; then
+              echo "🛑 PR is closed, merged, or draft. Skipping preview deployment."
               exit 0
             fi
 
@@ -118,8 +119,8 @@ jobs:
             PREFIX="${REPO}_${BRANCH}_"
             
             update_or_create_service() {
-              if [ "$PR_STATE" = "closed" ] || [ "$IS_MERGED" = "true" ]; then
-                echo "🛑 PR is closed/merged. Skipping service update/creation."
+              if [ "$PR_STATE" = "closed" ] || [ "$IS_MERGED" = "true" ] || [ "$IS_DRAFT" = "true" ]; then
+                echo "🛑 PR is closed/merged/draft. Skipping service update/creation."
                 return 0
               fi
               SERVICE_NAME=$1
