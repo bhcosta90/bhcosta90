@@ -98,39 +98,50 @@ jobs:
             docker network inspect web >/dev/null 2>&1 || docker network create --driver overlay web
 
             # Resolver ENV
-            # Verificar se existe arquivo específico da branch (ex: .env-main, .env-sandbox)
-            # Se não encontrar, tenta .env-production para as branches main ou master
-            # Senão assume o .env padrão
+            # O default é o .env, e os arquivos específicos (.env-branch) sobrescrevem as variáveis do .env
             
-            echo "📂 Debugging variables:"
-            echo "   HOME: $HOME"
-            echo "   REPO: $REPO"
-            echo "   BRANCH: $BRANCH"
-            echo "   Checking files in: $HOME/$REPO/"
-            ls -la "$HOME/$REPO/" || echo "❌ Directory $HOME/$REPO/ not found!"
-
-            FINAL_ENV="$HOME/$REPO/.env-$BRANCH"
+            ENV_PATH="$HOME/$REPO"
+            BASE_ENV="$ENV_PATH/.env"
+            BRANCH_ENV="$ENV_PATH/.env-$BRANCH"
             
             # Caso especial: se branch for main ou master e .env-main/.env-master não existir, tentar .env-production
             if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
-                if [ ! -f "$FINAL_ENV" ]; then
+                if [ ! -f "$BRANCH_ENV" ]; then
                     echo "🔍 Trying .env-production for main/master..."
-                    FINAL_ENV="$HOME/$REPO/.env-production"
+                    BRANCH_ENV="$ENV_PATH/.env-production"
                 fi
             fi
 
-            if [ ! -f "$FINAL_ENV" ]; then
-              echo "⚠️ Specific file not found at $FINAL_ENV"
-              echo "🔍 Trying default .env from repository..."
-              FINAL_ENV="$HOME/$REPO/.env"
+            # Arquivo final que o container usará
+            FINAL_ENV="$ENV_PATH/.env-merged-$BRANCH"
+
+            if [ ! -f "$BASE_ENV" ]; then
+              echo "⚠️  Arquivo base $BASE_ENV não encontrado!"
+              # Se não tem base, tenta usar o da branch direto se existir
+              if [ -f "$BRANCH_ENV" ]; then
+                 cp "$BRANCH_ENV" "$FINAL_ENV"
+                 echo "✅ Usando apenas o arquivo específico: $BRANCH_ENV"
+              else
+                 echo "❌ Nenhum arquivo .env ou .env-branch encontrado em $ENV_PATH"
+                 exit 1
+              fi
+            else
+              # Se o base existe, começamos com ele
+              cp "$BASE_ENV" "$FINAL_ENV"
+              echo "📝 Iniciando com base $BASE_ENV"
+              
+              if [ -f "$BRANCH_ENV" ]; then
+                echo "➕ Adicionando variáveis específicas de $BRANCH_ENV"
+                # Adiciona uma quebra de linha por segurança e concatena o conteúdo
+                echo "" >> "$FINAL_ENV"
+                cat "$BRANCH_ENV" >> "$FINAL_ENV"
+                echo "✅ Arquivos mesclados com sucesso."
+              else
+                echo "ℹ️  Arquivo específico $BRANCH_ENV não encontrado, usando apenas o base."
+              fi
             fi
 
-            if [ ! -f "$FINAL_ENV" ]; then
-              echo "❌ Nenhum arquivo .env encontrado em $HOME/$REPO/"
-              exit 1
-            fi
-
-            echo "✅ Usando ENV: $FINAL_ENV"
+            echo "🚀 Usando arquivo final: $FINAL_ENV"
 
             PREFIX="${REPO}-${BRANCH}_"
 
