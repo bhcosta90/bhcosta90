@@ -151,6 +151,8 @@ jobs:
               SERVICE_NAME=$1
               COMMAND=$2
               SERVICE_REPLICAS=${3:-$REPLICAS}
+              HOST_IP=$(hostname -I | awk '{print $2}')
+              echo "🌐 Host IP detectado: $HOST_IP"
             
               if docker service inspect ${SERVICE_NAME} >/dev/null 2>&1; then
                 echo "🔄 Atualizando ${SERVICE_NAME}..."
@@ -179,7 +181,7 @@ jobs:
                   --name ${SERVICE_NAME} \
                   --replicas ${SERVICE_REPLICAS} \
                   --network web \
-                  --host host.docker.internal:host-gateway \
+                  --host host.internal:${HOST_IP} \
                   --mount type=bind,src=${FINAL_ENV},dst=/var/www/html/.env \
                   --env REDIS_PREFIX=${PREFIX} \
                   --env CACHE_PREFIX=${PREFIX}cache \
