@@ -55,7 +55,7 @@ jobs:
             BRANCH="${{ env.BRANCH_NAME }}"
             REPO="${{ github.event.repository.name }}"
             USER="${{ secrets.DOCKERHUB_USERNAME }}"
-            APP_NAME="$REPO-$BRANCH"
+            APP_NAME="preview-$REPO-$BRANCH"
             IMAGE="$USER/$REPO:$BRANCH"
             ENV_BASE="${{ env.ENV_BASE }}"
             
@@ -221,7 +221,7 @@ jobs:
           script: |
             BRANCH="${{ env.BRANCH_NAME }}"
             REPO="${{ github.event.repository.name }}"
-            APP_NAME="$REPO-$BRANCH"
+            APP_NAME="preview-$REPO-$BRANCH"
             DOMAIN="$BRANCH.preview.${{ env.DOMAIN_BASE }}"
             CADDYFILE="$HOME/CaddyfilePreview"
             USER="${{ secrets.DOCKERHUB_USERNAME }}"
