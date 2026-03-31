@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => response()->json(['status' => 'ok']));
+Route::get('/', fn () => response()->json(['status' => 'ok', 'version' => mb_trim(file_get_contents(base_path('version.txt')))]));
 
 Route::middleware('api')->group(function (): void {
     Route::redirect('/twitter', 'https://x.com/bhcosta90');
