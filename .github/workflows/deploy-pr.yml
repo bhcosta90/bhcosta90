@@ -14,16 +14,19 @@ env:
 
 jobs:
   deploy:
-    if: github.event.action != 'closed' && github.event.pull_request.draft == false
+    if: github.event.pull_request.state != 'closed' && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
+        if: github.event.pull_request.state != 'closed'
         uses: actions/checkout@v4
 
       - name: Run Laravel Tests
+        if: github.event.pull_request.state != 'closed'
         uses: ./.github/actions/laravel-tests
 
       - name: Set branch name (sanitized)
+        if: github.event.pull_request.state != 'closed'
         run: |
           BRANCH_NAME=$(echo "${{ github.head_ref }}" | sed 's/\//-/g')
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
@@ -31,19 +34,24 @@ jobs:
           echo "DOMAIN=$BRANCH_NAME.preview.${{ env.DOMAIN_BASE }}" >> $GITHUB_ENV
 
       - name: Update version.txt with commit hash
+        if: github.event.pull_request.state != 'closed'
         run: |
           echo "$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7) $(date +'%Y-%m-%d %H:%M:%S')" > version.txt
 
       - name: Login no Docker Hub
+        if: github.event.pull_request.state != 'closed'
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Build da imagem
+        if: github.event.pull_request.state != 'closed'
         run: docker build -t $IMAGE --target app .
 
       - name: Push da imagem
+        if: github.event.pull_request.state != 'closed'
         run: docker push $IMAGE
 
       - name: Deploy on server
+        if: github.event.pull_request.state != 'closed'
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -52,6 +60,7 @@ jobs:
           timeout: 60s
           script: |
             set -e
+            PR_STATE="${{ github.event.pull_request.state }}"
             BRANCH="${{ env.BRANCH_NAME }}"
             REPO="${{ github.event.repository.name }}"
             USER="${{ secrets.DOCKERHUB_USERNAME }}"
@@ -59,7 +68,13 @@ jobs:
             IMAGE="$USER/$REPO:$BRANCH"
             ENV_BASE="${{ env.ENV_BASE }}"
             
-            echo "🚀 Deploying PR: $APP_NAME"
+            echo "🚀 Deploying PR: $APP_NAME (State: $PR_STATE)"
+            
+            if [ "$PR_STATE" = "closed" ]; then
+              echo "🛑 PR is closed. Skipping deployment."
+              exit 0
+            fi
+
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "$USER" --password-stdin
             docker pull $IMAGE
             docker network inspect web >/dev/null 2>&1 || docker network create web
@@ -102,6 +117,10 @@ jobs:
             PREFIX="${REPO}_${BRANCH}_"
             
             update_or_create_service() {
+              if [ "$PR_STATE" = "closed" ]; then
+                echo "🛑 PR is closed. Skipping service update/creation."
+                return 0
+              fi
               SERVICE_NAME=$1
               COMMAND=$2
               SERVICE_REPLICAS=${3:-1}
