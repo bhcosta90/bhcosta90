@@ -14,7 +14,7 @@ env:
 
 jobs:
   deploy:
-    if: github.event.action != 'closed' && github.event.pull_request.draft == false
+    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
