@@ -65,38 +65,59 @@ jobs:
             docker network inspect web >/dev/null 2>&1 || docker network create web
 
             # Resolver ENV
-            # Verificar se existe arquivo específico da branch (ex: .env-minha-branch)
-            # Senão assume o .env padrão do repositório
-            ENV_DIR="$HOME/${REPO}"
-            mkdir -p "$ENV_DIR"
-
-            echo "📂 Debugging variables:"
-            echo "   HOME: $HOME"
-            echo "   REPO: $REPO"
-            echo "   BRANCH: $BRANCH"
-            echo "   Checking files in: $ENV_DIR/"
-            ls -la "$ENV_DIR/" || echo "❌ Directory $ENV_DIR/ not found!"
+            # O default é o .env, e os arquivos específicos (.env-branch) sobrescrevem as variáveis do .env
+            
+            ENV_PATH="$HOME/$REPO"
+            BASE_ENV="$ENV_PATH/.env"
+            BRANCH_ENV="$ENV_PATH/.env-$BRANCH"
 
             # Enviar todas as env para a pasta (caso exista o secret ENV)
             if [ -n "${{ secrets.ENV }}" ]; then
-              echo "📝 Gerando arquivo de env específico para PR: $ENV_DIR/.env-$BRANCH"
-              echo "${{ secrets.ENV }}" > "$ENV_DIR/.env-$BRANCH"
-            fi
-            
-            FINAL_ENV="$ENV_DIR/.env-$BRANCH"
-            
-            if [ ! -f "$FINAL_ENV" ]; then
-              echo "⚠️ Specific file not found at $FINAL_ENV"
-              echo "🔍 Trying default .env from repository..."
-              FINAL_ENV="$ENV_DIR/.env"
-            fi
-            
-            if [ ! -f "$FINAL_ENV" ]; then
-              echo "❌ Nenhum arquivo .env encontrado em $ENV_DIR!"
-              exit 1
+              echo "📝 Gerando arquivo de env específico para PR: $BRANCH_ENV"
+              echo "${{ secrets.ENV }}" > "$BRANCH_ENV"
             fi
 
-            echo "✅ Usando ENV: $FINAL_ENV"
+            # Arquivo final que o container usará
+            FINAL_ENV="$ENV_PATH/.env-merged-$BRANCH"
+
+            if [ ! -f "$BASE_ENV" ]; then
+              echo "⚠️  Arquivo base $BASE_ENV não encontrado!"
+              # Se não tem base, tenta usar o da branch direto se existir
+              if [ -f "$BRANCH_ENV" ]; then
+                 cp "$BRANCH_ENV" "$FINAL_ENV"
+                 echo "✅ Usando apenas o arquivo específico: $BRANCH_ENV"
+              else
+                 echo "❌ Nenhum arquivo .env ou .env-branch encontrado em $ENV_PATH"
+                 exit 1
+              fi
+            else
+              # Se o base existe, mesclamos as variáveis
+              echo "📝 Mesclando $BASE_ENV com $BRANCH_ENV..."
+              
+              if [ -f "$BRANCH_ENV" ]; then
+                echo "➕ Mesclando variáveis específicas de $BRANCH_ENV"
+                # Usa awk para mesclar os arquivos: variáveis em BRANCH_ENV sobrescrevem BASE_ENV
+                # NR==FNR processa o primeiro arquivo (BRANCH_ENV), guarda em a[$1]
+                # Depois processa BASE_ENV, se a chave existir em a, imprime o valor de a e deleta de a.
+                # Se não existir, imprime a linha original de BASE_ENV.
+                # No final, imprime o que sobrou em a (novas chaves de BRANCH_ENV).
+                awk -F'=' '
+                  NR==FNR { if($1!="") a[$1]=$0; next }
+                  { 
+                    split($0,parts,"="); 
+                    key=parts[1];
+                    if(key in a) { print a[key]; delete a[key] } else { print } 
+                  }
+                  END { for (i in a) print a[i] }
+                ' "$BRANCH_ENV" "$BASE_ENV" > "$FINAL_ENV"
+                echo "✅ Arquivos mesclados com sucesso."
+              else
+                echo "ℹ️  Arquivo específico $BRANCH_ENV não encontrado, usando apenas o base."
+                cp "$BASE_ENV" "$FINAL_ENV"
+              fi
+            fi
+
+            echo "🚀 Usando arquivo final: $FINAL_ENV"
 
             # --- Services ---
             PREFIX="${REPO}_${BRANCH}_"
@@ -213,6 +234,10 @@ jobs:
             
             # Remover imagem
             docker rmi $IMAGE >/dev/null 2>&1 || true
+
+            # Remover arquivos de configuração específicos se existirem
+            ENV_PATH="$HOME/$REPO"
+            rm -f "$ENV_PATH/.env-merged-$BRANCH" "$ENV_PATH/.env-$BRANCH" || true
             
             # Remover do Caddyfile (bloco inteiro de 3 linhas assumindo o padrão criado)
             # Vamos usar um sed mais robusto para remover o bloco
