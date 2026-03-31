@@ -2,15 +2,15 @@ name: Deploy
 
 on:
   push:
-    branches: [master, main, sandbox, develop]
-
-  pull_request:
-    branches: [master, main, sandbox, develop]
+    branches:
+      - main
+      - master
+      - develop
+      - sandbox
 
 env:
   ENV_BASE: .env
   REPLICAS_CONFIG: "main:1,sandbox:1"
-  TARGET_REF: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref || github.event.pull_request.head.ref }}
 
 jobs:
   deploy:
@@ -35,11 +35,7 @@ jobs:
       # 🏷️ Nome da imagem
       - name: Set image name
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BRANCH_NAME="${{ env.TARGET_REF }}"
-          else
-            BRANCH_NAME="${{ github.ref_name }}"
-          fi
+          BRANCH_NAME="${{ github.ref_name }}"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           echo "IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:$BRANCH_NAME" >> $GITHUB_ENV
           echo "IMAGE_LATEST=${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest" >> $GITHUB_ENV
