@@ -129,7 +129,7 @@ jobs:
                 docker service create \
                   --name ${SERVICE_NAME} \
                   --replicas ${SERVICE_REPLICAS} \
-                  --network web \
+                  --network host \
                   --host host.docker.internal:host-gateway \
                   --mount type=bind,src=${FINAL_ENV},dst=/var/www/html/.env \
                   --env REDIS_PREFIX=${PREFIX} \
