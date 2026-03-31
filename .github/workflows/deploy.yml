@@ -43,15 +43,14 @@ jobs:
       # 🏷️ Update version.txt
       - name: Update version.txt with commit hash
         run: |
-          echo "${{ github.sha }}" | cut -c1-7 > version.txt
-          date +" %Y-%m-%d %H:%M:%S" >> version.txt
+          COMMIT=$(echo "${{ github.sha }}" | cut -c1-7)
+          DATE=$(date +"%Y-%m-%d %H:%M:%S")
           EMAIL="${{ github.event.head_commit.author.email }}"
           if [ -z "$EMAIL" ]; then
-            # Se não encontrar o e-mail no evento de commit, tenta obter via git log (ex: se o commit for local)
             EMAIL=$(git log -1 --pretty=format:'%ae')
           fi
-          MASKED_EMAIL=$(echo "$EMAIL" | awk -F'@' '{ user=$1; domain=$2; mask_user=substr(user, 1, 3); for(i=4; i<=length(user); i++) mask_user=mask_user"*"; split(domain, p, "."); mask_p1=substr(p[1], 1, 2); for(i=3; i<=length(p[1]); i++) mask_p1=mask_p1"*"; printf " %s@%s", mask_user, mask_p1; for(i=2; i<=length(p); i++) printf ".%s", p[i]; print "" }')
-          echo "$MASKED_EMAIL" >> version.txt
+          MASKED_EMAIL=$(echo "$EMAIL" | awk -F'@' '{ user=$1; domain=$2; mask_user=substr(user, 1, 3); for(i=4; i<=length(user); i++) mask_user=mask_user"*"; split(domain, p, "."); mask_p1=substr(p[1], 1, 2); for(i=3; i<=length(p[1]); i++) mask_p1=mask_p1"*"; printf "%s@%s", mask_user, mask_p1; for(i=2; i<=length(p); i++) printf ".%s", p[i]; print "" }')
+          echo "$COMMIT - $DATE - $MASKED_EMAIL" > version.txt
 
       # 🔐 Login Docker Hub
       - name: Login no Docker Hub
