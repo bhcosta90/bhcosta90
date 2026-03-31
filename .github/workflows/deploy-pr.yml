@@ -102,6 +102,8 @@ jobs:
             PREFIX="${REPO}_${BRANCH}_"
             
             update_or_create_service() {
+              HOST_IP=$(hostname -I | awk '{print $2}')
+              echo "🌐 Host IP detectado: $HOST_IP"
               SERVICE_NAME=$1
               COMMAND=$2
               SERVICE_REPLICAS=${3:-1}
@@ -129,8 +131,8 @@ jobs:
                 docker service create \
                   --name ${SERVICE_NAME} \
                   --replicas ${SERVICE_REPLICAS} \
-                  --network host \
-                  --host host.docker.internal:host-gateway \
+                  --network web \
+                  --host host.docker.internal:${HOST_IP} \
                   --mount type=bind,src=${FINAL_ENV},dst=/var/www/html/.env \
                   --env REDIS_PREFIX=${PREFIX} \
                   --env CACHE_PREFIX=${PREFIX}cache \
