@@ -2,7 +2,7 @@ name: PR Deploy
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, closed]
 
 permissions:
   pull-requests: write
@@ -160,7 +160,7 @@ jobs:
             echo "✅ PR Deploy finalizado: $APP_NAME no domínio $DOMAIN"
 
       - name: Comment on PR
-        if: github.event.action == 'opened'
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
         uses: actions/github-script@v7
         with:
           script: |
