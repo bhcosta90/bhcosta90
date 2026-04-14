@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-      - sandbox
-      - develop
+#      - sandbox
+#      - develop
 
 jobs:
   deploy:
