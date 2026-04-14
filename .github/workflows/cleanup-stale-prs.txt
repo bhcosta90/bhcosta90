@@ -2,7 +2,7 @@ name: PR Auto Cleanup (24h)
 
 on:
   schedule:
-    - cron: '0 * * * *' # Roda a cada hora
+    - cron: '0 0 * * *' # Roda uma vez por dia (meia-noite)
   workflow_dispatch: # Permite rodar manualmente
 
 env:
