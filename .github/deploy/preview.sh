@@ -225,8 +225,8 @@ open_preview() {
     echo "📁 Storage"
     prepare_storage
 
-    echo "🧹 Cache"
-    optimize
+#    echo "🧹 Cache"
+#    optimize
 
     echo "🧱 Migrate"
     migrate_db
