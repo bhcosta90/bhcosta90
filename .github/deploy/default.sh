@@ -220,14 +220,14 @@ run_pipeline() {
     echo "🧹 Cache"
     optimize
 
-#    echo "🔍 Validação"
-#    validate
+    echo "🔍 Validação"
+    validate
 
-#    echo "🧱 Migrate"
-#    migrate_db
-#
-#    echo "📬 Queue"
-#    restart_queue
+    echo "🧱 Migrate"
+    migrate_db
+
+    echo "📬 Queue"
+    restart_queue
 
     echo "📝 Version"
     generate_version_file
