@@ -135,12 +135,10 @@ optimize() {
 validate() {
     php artisan --version > /dev/null
     php artisan migrate --pretend --force > /dev/null
-    php artisan tenants:migrate --pretend --force > /dev/null
 }
 
 migrate_db() {
     php artisan migrate --force
-    php artisan tenants:migrate --force
     php artisan permissions:refresh --force
 }
 
@@ -220,8 +218,8 @@ run_pipeline() {
 #    echo "🧹 Cache"
 #    optimize
 
-#    echo "🔍 Validação"
-#    validate
+    echo "🔍 Validação"
+    validate
 
     echo "🧱 Migrate"
     migrate_db
