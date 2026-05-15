@@ -217,8 +217,8 @@ run_pipeline() {
     echo "📁 Storage"
     prepare_storage
 
-    echo "🧹 Cache"
-    optimize
+#    echo "🧹 Cache"
+#    optimize
 
     echo "🔍 Validação"
     validate
