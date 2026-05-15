@@ -7,7 +7,7 @@ runs:
     - name: Setup PHP with Extensions and Tools
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.4'
+        php-version: '8.3'
         extensions: mbstring, bcmath, openssl, pdo, tokenizer, xml, ctype, json, curl
         tools: composer
 
