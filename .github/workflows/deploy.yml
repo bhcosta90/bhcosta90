@@ -7,6 +7,12 @@ on:
       - sandbox
       - develop
 
+  pull_request:
+    branches:
+      - main
+      - sandbox
+      - develop
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
