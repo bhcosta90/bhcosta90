@@ -11,7 +11,7 @@ ENV_DIR="$BASE_DIR/.env"
 REPO_NAME="$(basename "$BASE_DIR")"
 ACCOUNT="$(basename "$(dirname "$BASE_DIR")")"
 
-REPO="${REPO:-git@github.com:bhcosta90/wms.git}"
+REPO="${REPO:-git@github.com:bhcosta90/bhcosta90.git}"
 BRANCH="$ENVIRONMENT"
 
 LOCK_FILE="$APP_DIR/deploy.lock"
@@ -114,7 +114,7 @@ ensure_prefixes() {
         fi
     }
 
-    PREFIX="wms_${ENVIRONMENT}_"
+    PREFIX="bhcosta90_${ENVIRONMENT}_"
 
     add_if_missing "REDIS_PREFIX" "$PREFIX"
     add_if_missing "CACHE_PREFIX" "$PREFIX"
