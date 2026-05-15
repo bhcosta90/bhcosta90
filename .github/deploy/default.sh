@@ -139,7 +139,6 @@ validate() {
 
 migrate_db() {
     php artisan migrate --force
-    php artisan permissions:refresh --force
 }
 
 supervisor_up() {
